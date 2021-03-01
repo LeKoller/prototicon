@@ -6,7 +6,7 @@
       >
         <div class="welcome">
           <h1>Welcome to</h1>
-          <p>... the social midia of projects, prototypes and fun!</p>
+          <p>... the social media of projects, prototypes and fun!</p>
         </div>
       </transition>
       <transition class="animate__animated animate__bounceIn">
