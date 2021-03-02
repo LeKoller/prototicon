@@ -2,10 +2,31 @@
   <div id="nav">
     <span id="title">pro<span id="tot">tot</span>icon</span>
     <router-link class="link" to="/">Home</router-link> |
+    <div v-if="!isLogged">
+      <router-link class="link" to="/signup" v>Join</router-link> |
+    </div>
     <router-link class="link" to="/about">About</router-link>
   </div>
   <router-view />
 </template>
+
+<script>
+import { computed } from "vue";
+import store from "./store";
+
+export default {
+  name: "App",
+  setup() {
+    const isLogged = computed(() => store.state.token !== "");
+
+    return {
+      computed,
+      store,
+      isLogged,
+    };
+  },
+};
+</script>
 
 <style lang="scss">
 #title {
@@ -44,6 +65,11 @@
 #nav a {
   font-weight: bold;
   color: #2c3e50;
+  transition: all 0.25s ease;
+
+  &:hover {
+    color: #687785;
+  }
 }
 
 #nav a.router-link-exact-active {

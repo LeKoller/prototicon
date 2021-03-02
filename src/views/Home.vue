@@ -16,21 +16,21 @@
         <div class="login">
           <h2>Login</h2>
           <div class="form_container">
-            <form @submit.prevent="">
+            <form @submit.prevent="performLogin">
               <input
                 type="text"
                 name="username"
                 placeholder="username"
-                v-model="initial"
+                v-model="state.username"
               />
               <input
                 type="password"
                 name="password"
                 placeholder="password"
-                v-model="password"
+                v-model="state.password"
               />
               <div class="anchor_and_button">
-                <a href="">Sign up</a>
+                <a href="/signup">Sign up</a>
                 <button>Login</button>
               </div>
             </form>
@@ -44,19 +44,36 @@
 <script>
 import { reactive } from "vue";
 import LoginForm from "../components/LoginForm";
+import axios from "axios";
+import store from "../store";
 
 export default {
   name: "Home",
   setup() {
-    let initial = "";
-    let password = "";
-
     const state = reactive({
-      initial: "",
+      username: "",
       password: "",
+      failedLogin: false,
     });
 
-    return state, LoginForm, initial, password;
+    function performLogin() {
+      axios
+        .post("https://prototicon.herokuapp.com/api/login/", {
+          username: state.username,
+          password: state.password,
+        })
+        .then((response) => response.data)
+        .then((data) => {
+          store.dispatch("setToken", data.token);
+          console.log(store.state.token);
+        })
+        .catch(() => {
+          state.failedLogin = true;
+          console.log("login failed = " + state.failedLogin);
+        });
+    }
+
+    return { LoginForm, state, performLogin, store };
   },
 };
 </script>
@@ -98,7 +115,7 @@ h2 {
       backdrop-filter: blur(8px);
       position: absolute;
       border-radius: 8px;
-      right: 6vw;
+      right: 8vw;
       top: 14vh;
       max-width: 26vw;
       padding: 20px;
