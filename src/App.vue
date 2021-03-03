@@ -3,7 +3,7 @@
     <span id="title">pro<span id="tot">tot</span>icon</span>
     <router-link class="link" to="/">Home</router-link> |
     <div v-if="!isLogged">
-      <router-link class="link" to="/signup" v>Join</router-link> |
+      <router-link class="link" to="/signup">Join</router-link> |
     </div>
     <router-link class="link" to="/about">About</router-link>
   </div>

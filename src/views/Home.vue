@@ -46,6 +46,7 @@ import { reactive } from "vue";
 import LoginForm from "../components/LoginForm";
 import axios from "axios";
 import store from "../store";
+import router from "../router";
 
 export default {
   name: "Home",
@@ -67,6 +68,8 @@ export default {
             username: state.user.username,
             token: data.token,
           });
+
+          router.push("/dashboard");
         })
         .catch(() => {
           state.failedLogin = true;
