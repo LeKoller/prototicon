@@ -2,18 +2,21 @@ import { createStore } from "vuex";
 
 export default createStore({
   state: {
-    token: "",
+    user: {
+      username: "",
+      token: "",
+    },
   },
 
   mutations: {
-    SET_TOKEN(state, receivedToken) {
-      state.token = receivedToken;
+    SET_USER(state, receivedUser) {
+      state.user = receivedUser;
     },
   },
 
   actions: {
-    setToken({ commit }, receivedToken) {
-      commit("SET_TOKEN", receivedToken);
+    setUser({ commit }, receivedUser) {
+      commit("SET_USER", receivedUser);
     },
   },
 

@@ -21,13 +21,13 @@
                 type="text"
                 name="username"
                 placeholder="username"
-                v-model="state.username"
+                v-model="state.user.username"
               />
               <input
                 type="password"
                 name="password"
                 placeholder="password"
-                v-model="state.password"
+                v-model="state.user.password"
               />
               <div class="anchor_and_button">
                 <a href="/signup">Sign up</a>
@@ -51,21 +51,22 @@ export default {
   name: "Home",
   setup() {
     const state = reactive({
-      username: "",
-      password: "",
+      user: {
+        username: "",
+        password: "",
+      },
       failedLogin: false,
     });
 
     function performLogin() {
       axios
-        .post("https://prototicon.herokuapp.com/api/login/", {
-          username: state.username,
-          password: state.password,
-        })
+        .post("https://prototicon.herokuapp.com/api/login/", state.user)
         .then((response) => response.data)
         .then((data) => {
-          store.dispatch("setToken", data.token);
-          console.log(store.state.token);
+          store.dispatch("setUser", {
+            username: state.user.username,
+            token: data.token,
+          });
         })
         .catch(() => {
           state.failedLogin = true;

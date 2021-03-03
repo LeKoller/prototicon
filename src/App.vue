@@ -17,7 +17,7 @@ import store from "./store";
 export default {
   name: "App",
   setup() {
-    const isLogged = computed(() => store.state.token !== "");
+    const isLogged = computed(() => store.state.user.token !== "");
 
     return {
       computed,
