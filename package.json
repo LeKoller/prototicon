@@ -10,11 +10,14 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "material-design-icons": "^3.0.1",
     "node-sass": "^5.0.0",
     "sass-loader": "10.1.1",
     "vue": "^3.0.0",
+    "vue-material": "^1.0.0-beta-15",
     "vue-router": "^4.0.0-0",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "vuex-persistedstate": "^4.0.0-beta.3"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
