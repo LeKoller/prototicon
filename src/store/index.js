@@ -12,7 +12,11 @@ export default createStore({
   state: {
     user: {
       username: "",
+      followers: [],
+      following: [],
+      friends: [],
       token: "",
+      image: null,
     },
   },
 
@@ -20,9 +24,19 @@ export default createStore({
     SET_USER(state, receivedUser) {
       state.user = receivedUser;
     },
+    SET_USER_AVATAR(state, avatar) {
+      state.user.image = avatar;
+    },
+    SET_USER_FRIENDS(state, friends) {
+      state.user.friends = friends;
+    },
     LOGOUT(state) {
-      state.user.token = "";
       state.user.username = "";
+      state.user.followers = [];
+      state.user.following = [];
+      state.user.friends = [];
+      state.user.token = "";
+      state.user.image = null;
 
       router.push("/");
     },
@@ -31,6 +45,12 @@ export default createStore({
   actions: {
     setUser({ commit }, receivedUser) {
       commit("SET_USER", receivedUser);
+    },
+    setUserAvatar({ commit }, avatar) {
+      commit("SET_USER_AVATAR", avatar);
+    },
+    setUserFriends({ commit }, friends) {
+      commit("SET_USER_FRIENDS", friends);
     },
     logout({ commit }) {
       commit("LOGOUT");

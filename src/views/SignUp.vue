@@ -104,13 +104,9 @@ export default {
     }
 
     function performSignUp() {
-      // console.log(enableButton.value);
       if (enableButton.value) {
         axios
-          .post(
-            "https://prototicon.herokuapp.com/api/accounts/",
-            state.signInObject
-          )
+          .post("http://0.0.0.0:8000/api/accounts/", state.signInObject)
           .then((response) => console.log(response.status));
       }
     }

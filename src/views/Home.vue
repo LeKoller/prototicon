@@ -61,11 +61,14 @@ export default {
 
     function performLogin() {
       axios
-        .post("https://prototicon.herokuapp.com/api/login/", state.user)
+        .post("http://0.0.0.0:8000/api/login/", state.user)
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUser", {
-            username: state.user.username,
+            username: data.user.username,
+            followers: data.user.followers,
+            following: data.user.following,
+            friends: data.friends,
             token: data.token,
           });
 
