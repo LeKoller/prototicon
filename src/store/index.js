@@ -18,6 +18,15 @@ export default createStore({
       token: "",
       image: null,
     },
+    other: {
+      username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      image: null,
+      followers: [],
+      following: [],
+    },
   },
 
   mutations: {
@@ -40,6 +49,9 @@ export default createStore({
 
       router.push("/");
     },
+    SET_OTHER(state, receivedOther) {
+      state.other = receivedOther;
+    },
   },
 
   actions: {
@@ -54,6 +66,9 @@ export default createStore({
     },
     logout({ commit }) {
       commit("LOGOUT");
+    },
+    setOther({ commit }, receivedOther) {
+      commit("SET_OTHER", receivedOther);
     },
   },
 

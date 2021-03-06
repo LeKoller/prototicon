@@ -8,22 +8,14 @@
             src="../assets/default_user_avatar.png"
             alt="Profile pricture"
             v-if="store.state.user.image === null"
-            @click="
-              () => {
-                state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
-              }
-            "
+            @click="switchUploadAvatar"
           />
           <img
             class="profile_picture"
             :src="`http://0.0.0.0:8000${store.state.user.image}/`"
             alt="Profile pricture"
             v-else
-            @click="
-              () => {
-                state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
-              }
-            "
+            @click="switchUploadAvatar"
           />
         </div>
 
@@ -63,13 +55,20 @@
         </div>
 
         <div class="user_search">
-          <input type="search" placeholder="search for a user" />
-          <button class="search_button">
+          <input
+            type="search"
+            placeholder="search for a user"
+            v-model="state.search"
+          />
+          <button class="search_button" @click="searchForUser">
             <span id="search_users_icon" class="material-icons">
               person_search
             </span>
           </button>
         </div>
+        <span class="error_message" v-show="state.searchFailed"
+          >user not found</span
+        >
       </div>
     </transition>
 
@@ -172,6 +171,8 @@ export default {
       timeline: [],
       uploadAvatarInputShow: false,
       avatarFile: null,
+      search: "",
+      searchFailed: false,
     });
 
     const asideResetIndex = ref(0);
@@ -190,7 +191,28 @@ export default {
       },
     };
 
-    async function uploadAvatar() {}
+    function switchUploadAvatar() {
+      state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
+    }
+
+    async function uploadAvatar() {
+      if (state.avatarFile !== null) {
+        const fd = new FormData();
+        fd.append("image", state.avatarFile, state.avatarFile.name);
+
+        await axios
+          .post("http://0.0.0.0:8000/api/accounts/avatar/", fd, imageConfig)
+          .then((response) => response.data)
+          .then((data) => {
+            console.log(data);
+          });
+
+        switchUploadAvatar();
+        loadUserAvatar();
+        asideResetIndex.value++;
+        state.avatarFile = null;
+      }
+    }
 
     function enableText() {
       state.uploadText = !state.uploadText;
@@ -213,8 +235,6 @@ export default {
     }
 
     function makeRequestObject() {
-      console.log(state.timeline);
-
       if (state.content.text !== "") {
         return {
           title: state.content.title,
@@ -234,7 +254,6 @@ export default {
         .get("http://0.0.0.0:8000/api/contents/lekoller/", config)
         .then((response) => response.data)
         .then((data) => {
-          console.log(timelineResetIndex.value);
           state.timeline = data.contents;
           state.timeline.sort((a, b) => {
             if (a.id < b.id) {
@@ -317,6 +336,21 @@ export default {
       timelineResetIndex.value++;
     }
 
+    async function searchForUser() {
+      await axios
+        .get(`http://0.0.0.0:8000/api/accounts/${state.search}/`, config)
+        .then((response) => response.data)
+        .then((data) => {
+          state.searchFailed = false;
+          store.dispatch("setOther", data);
+          console.log(store.state.other);
+        })
+        .catch(() => {
+          state.searchFailed = true;
+          asideResetIndex.value++;
+        });
+    }
+
     onMounted(loadUserAvatar);
     onMounted(loadUserFriends);
     onMounted(getTimeline);
@@ -327,14 +361,16 @@ export default {
       state,
       asideResetIndex,
       timelineResetIndex,
+      switchUploadAvatar,
       uploadAvatar,
       enableText,
       enableImage,
       enablePrivate,
       onAvatarFileSelected,
       onContentFileSelected,
-      submitContent,
       deleteContent,
+      submitContent,
+      searchForUser,
     };
   },
 };
@@ -345,9 +381,13 @@ export default {
   display: grid;
   grid-gap: 10px;
   grid-template-columns: 1fr 4fr;
-  grid-template-rows: 41vh 50vw;
+  grid-template-rows: minmax(min-content, 45px) 1fr 18px; /* this is just magic *-* */
   grid-template-areas: "aside creation" "aside timeline";
   margin: 12px;
+
+  .error_message {
+    color: #ff817e;
+  }
 
   input,
   textarea {
@@ -361,11 +401,59 @@ export default {
   }
 
   .aside {
+    min-height: 86vh;
+    max-height: fit-content;
     grid-area: aside;
     background-color: #043156;
     display: flex;
     flex-direction: column;
     align-items: center;
+
+    input {
+      width: 14vw;
+      margin-top: 0.8rem;
+    }
+    input::-webkit-file-upload-button {
+      outline: none;
+      border: none;
+      border-radius: 8px;
+      padding: 4px;
+      background-color: steelblue;
+      color: #d3dce6;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        color: #73e3e7;
+      }
+
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
+    }
+
+    button {
+      outline: none;
+      border: none;
+      border-radius: 8px;
+      padding: 4px;
+      background-color: #4bb6ff;
+      color: #d3dce6;
+      font-family: "Fredoka One", cursive;
+      font-weight: normal;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.25s ease;
+
+      &:hover {
+        color: #d3dce6;
+        transform: scale(1.05, 1.05);
+      }
+
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
+    }
 
     .profile_picture {
       object-fit: cover;
@@ -457,7 +545,7 @@ export default {
   }
 
   .creation_area {
-    /* height: fit-content; */
+    height: fit-content;
     grid-area: creation;
     background-color: steelblue;
     display: flex;
@@ -566,9 +654,11 @@ export default {
   }
 
   .timeline {
+    height: fit-content;
     grid-area: timeline;
     background-color: slategrey;
     min-height: fit-content;
+    padding-bottom: 30px;
   }
 }
 </style>
