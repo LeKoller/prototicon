@@ -132,19 +132,7 @@
 
     <transition class="animate__animated animate__fadeInUp">
       <div class="timeline" :key="timelineResetIndex">
-        <div v-for="content in state.timeline" :key="content.id">
-          <div v-if="content.title !== ''">
-            <h3>{{ content.title }}</h3>
-            <div v-if="content.text !== ''">
-              <p>{{ content.text }}</p>
-            </div>
-            <div v-if="content.image !== null">
-              <img :src="`http://0.0.0.0:8000${content.image}/`" />
-            </div>
-            <button @click="deleteContent(content.id)">delete</button>
-            {{ content }}
-          </div>
-        </div>
+        <ContentCard :timelineResetIndex="timelineResetIndex" />
       </div>
     </transition>
   </div>
@@ -152,11 +140,16 @@
 
 <script>
 import store from "../store";
-import { onMounted, reactive, ref } from "vue";
+import { onBeforeMount, onMounted, reactive, ref } from "vue";
 import axios from "axios";
+import ContentCard from "../components/ContentCard";
+import { getTimeline, deleteContent } from "../helper.js";
 
 export default {
   name: "Dashboard",
+  components: {
+    ContentCard,
+  },
   setup() {
     const state = reactive({
       uploadText: false,
@@ -249,33 +242,6 @@ export default {
       }
     }
 
-    function getTimeline() {
-      axios
-        .get("http://0.0.0.0:8000/api/contents/lekoller/", config)
-        .then((response) => response.data)
-        .then((data) => {
-          state.timeline = data.contents;
-          state.timeline.sort((a, b) => {
-            if (a.id < b.id) {
-              return 1;
-            }
-
-            return -1;
-          });
-        });
-    }
-
-    function hideDeletedContent(content_id) {
-      state.timeline.forEach((content) => {
-        if (content.id === content_id) {
-          content.title = "";
-        }
-      });
-      getTimeline();
-
-      timelineResetIndex.value++;
-    }
-
     function loadUserAvatar() {
       axios
         .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
@@ -292,15 +258,6 @@ export default {
         .then((data) => {
           store.dispatch("setUserFriends", data.friends);
         });
-    }
-
-    async function deleteContent(content_id) {
-      await axios
-        .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
-        .then((response) => response.data)
-        .then((data) => console.log(data));
-
-      hideDeletedContent(content_id);
     }
 
     async function submitContent() {
@@ -351,9 +308,9 @@ export default {
         });
     }
 
+    onBeforeMount(getTimeline);
     onMounted(loadUserAvatar);
     onMounted(loadUserFriends);
-    onMounted(getTimeline);
 
     return {
       store,
@@ -371,6 +328,7 @@ export default {
       deleteContent,
       submitContent,
       searchForUser,
+      ContentCard,
     };
   },
 };
