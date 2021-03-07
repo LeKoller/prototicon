@@ -96,7 +96,6 @@ export default {
 
     function confirmationMessage() {
       if (passwordChecked.value) {
-        console.log(enableButton.value);
         return "confirmed!";
       }
 

@@ -57,7 +57,7 @@
         <div class="user_search">
           <input
             type="search"
-            placeholder="search for a user"
+            placeholder="search for an user"
             v-model="state.search"
           />
           <button class="search_button" @click="searchForUser">
@@ -131,8 +131,10 @@
     </transition>
 
     <transition class="animate__animated animate__fadeInUp">
-      <div class="timeline" :key="timelineResetIndex">
-        <ContentCard :timelineResetIndex="timelineResetIndex" />
+      <div class="timeline">
+        <transition class="animate__animated animate__bounceIn">
+          <ContentCard :timelineResetIndex="timelineResetIndex" />
+        </transition>
       </div>
     </transition>
   </div>
@@ -161,7 +163,6 @@ export default {
         user: store.state.user.username,
         is_private: false,
       },
-      timeline: [],
       uploadAvatarInputShow: false,
       avatarFile: null,
       search: "",
@@ -169,7 +170,7 @@ export default {
     });
 
     const asideResetIndex = ref(0);
-    const timelineResetIndex = ref(0);
+    // const timelineResetIndex = ref(0);
 
     const config = {
       headers: {
@@ -289,8 +290,6 @@ export default {
           });
       }
       getTimeline();
-
-      timelineResetIndex.value++;
     }
 
     async function searchForUser() {
@@ -317,7 +316,6 @@ export default {
       reactive,
       state,
       asideResetIndex,
-      timelineResetIndex,
       switchUploadAvatar,
       uploadAvatar,
       enableText,
@@ -455,6 +453,7 @@ export default {
 
           &:hover {
             color: #4bb6ff;
+            text-shadow: 0 0 24px #4bb6ff;
           }
         }
 
@@ -478,9 +477,13 @@ export default {
         color: slategrey;
         cursor: pointer;
         transition: all 0.25s ease;
+        position: relative;
+        right: 8px;
+        top: 4px;
 
         &:hover {
           transform: scale(1.05, 1.05);
+          text-shadow: 0 0 24px #4bb6ff;
           color: #4bb6ff;
         }
 
@@ -591,6 +594,7 @@ export default {
 
           &:hover {
             transform: scale(1.05, 1.05);
+            text-shadow: 0 0 24px #73e3e7;
             color: #73e3e7;
           }
 
@@ -606,6 +610,7 @@ export default {
         }
         .private {
           color: #b08cfa;
+          text-shadow: 0 0 24px #b08cfa;
         }
       }
     }

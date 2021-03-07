@@ -1,36 +1,39 @@
 import axios from "axios";
 import store from "./store";
+import config from "./components/ContentCard";
 
-export const config = {
-  headers: {
-    Authorization: `Token ${store.state.user.token}`,
-  },
-};
+function getFollowingUsernames() {
+  return store.state.user.following.map((user) => user.username);
+}
 
 export async function getTimeline() {
-  await axios
-    .get(
-      `http://0.0.0.0:8000/api/contents/${store.state.user.username}/`,
-      config
-    )
-    .then((response) => response.data)
-    .then((data) => {
-      store.dispatch("setTimeline", data.contents);
-    });
+  const usernames = getFollowingUsernames();
+  let contents = [];
+
+  usernames.push(store.state.user.username);
+
+  for (let username of usernames) {
+    await axios
+      .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+      .then((response) => response.data)
+      .then((data) => {
+        contents = [...contents, ...data.contents];
+      });
+
+    store.dispatch("setTimeline", contents);
+  }
 }
 
-export function hideDeletedContent(content_id, reset) {
+export function hideDeletedContent(content_id) {
   store.dispatch("setContentTitleEmpty", content_id);
   getTimeline();
-
-  reset.value++;
 }
 
-export async function deleteContent(content_id, reset) {
+export async function deleteContent(content_id) {
   await axios
     .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
     .then((response) => response.data)
-    .then((data) => console.log(data));
+    .then((data) => data);
 
-  hideDeletedContent(content_id, reset);
+  hideDeletedContent(content_id);
 }

@@ -6,7 +6,15 @@
     :content="content"
   >
     <div v-if="content.title !== ''">
-      <h3 class="title">{{ content.title }}</h3>
+      <div class="header">
+        <div class="author_case">
+          <h4>
+            author:
+            <a href="">{{ content.author_username }}</a>
+          </h4>
+        </div>
+        <h3 class="title">{{ content.title }}</h3>
+      </div>
       <div class="main_content">
         <img
           v-if="content.image !== null"
@@ -15,30 +23,13 @@
         />
         <div class="text_content">
           <p>{{ content.text }}</p>
-          <div class="comments">
-            <div
-              class="recorded_comments"
-              v-for="comment in getComments(content.id)"
-              :key="comment.id"
-            >
-              <p>{{ getComments(content.id).author_username }}</p>
-            </div>
-            <form @submit.prevent="">
-              <textarea
-                class="comment_field"
-                name=""
-                id=""
-                cols="30"
-                rows="2"
-              ></textarea>
-            </form>
-          </div>
+          <CommentsBox :content_id="content.id" />
         </div>
       </div>
       <button
         class="delete_buttton"
         v-if="store.state.user.username === content.author_username"
-        @click="deleteContent(content.id, timelineResetIndex)"
+        @click="deleteContent(content.id)"
       >
         delete
       </button>
@@ -47,36 +38,31 @@
 </template>
 
 <script>
-import { toRefs, reactive } from "vue";
 import store from "@/store";
-import { deleteContent, config } from "../helper.js";
-import axios from "axios";
+import { deleteContent } from "../helper.js";
+import CommentsBox from "./CommentsBox";
 
 export default {
   name: "ContentCard",
+  components: {
+    CommentsBox,
+  },
+  props: {
+    timelineResetIndex: Number,
+  },
   setup(props) {
-    const { timelineResetIndex } = toRefs(props);
-    const state = reactive({
-      comments: [],
-    });
-
-    async function getComments(content_id) {
-      return await axios
-        .get(`http://0.0.0.0:8000/api/comments/${content_id}/`, config)
-        .then((response) => response.data)
-        .then((data) => data);
-    }
-
-    // onBeforeMount(() => {
-    //   getComments();
-    // });
+    const config = {
+      headers: {
+        Authorization: `Token ${store.state.user.token}`,
+      },
+    };
 
     return {
       store,
-      state,
       deleteContent,
-      timelineResetIndex,
-      getComments,
+      props,
+      config,
+      CommentsBox,
     };
   },
 };
@@ -84,15 +70,36 @@ export default {
 
 <style lang="scss" scoped>
 .card {
-  background-color: #d3dce6;
+  background-color: rgba($color: #fff, $alpha: 0.8);
   margin: 20px 30px 20px 30px;
   border-radius: 8px;
   position: relative;
   padding-bottom: 10px;
 
-  .title {
-    padding-top: 30px;
-    color: slategrey;
+  .header {
+    display: flex;
+    justify-content: center;
+    position: relative;
+
+    .author_case {
+      position: absolute;
+      left: 20px;
+      color: rgb(182, 198, 214);
+
+      a {
+        color: #b08cfa;
+        text-decoration: none;
+        transition: all 0.25s ease;
+
+        &:hover {
+          color: #4bb6ff;
+        }
+      }
+    }
+
+    .title {
+      color: slategrey;
+    }
   }
 
   .main_content {
@@ -103,11 +110,29 @@ export default {
     border-radius: 8px;
     justify-content: center;
 
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgb(47, 54, 61);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgb(33, 39, 44);
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #312942;
+    }
+
     .content_image {
-      max-width: 30vw;
+      max-height: 60vh;
     }
 
     .text_content {
+      overflow: auto;
+      max-height: 60vh;
       background-color: rgb(47, 54, 61);
       color: #d3dce6;
       padding: 10px 60px 10px 60px;
