@@ -4,7 +4,9 @@
       <transition class="animate__animated animate__bounceIn">
         <div class="modal_content">
           <CreationArea />
-          <button @click="closeModal">close modal</button>
+          <button class="close_modal_button" @click="closeModal">
+            never mind...
+          </button>
         </div>
       </transition>
     </div>
@@ -47,10 +49,34 @@ export default {
   align-items: center;
   transition: opacity 0.3s ease;
 
-  .modal_wrapper {
+  /* .modal_wrapper {
     width: 60%;
     padding: 40px;
     background-color: rgba($color: #fff, $alpha: 0.7);
+  } */
+
+  .close_modal_button {
+    font-family: "Fredoka One", cursive;
+    font-weight: normal;
+    font-size: 1rem;
+    background-color: #b08cfa;
+    color: #d3dce6;
+    outline: none;
+    border: none;
+    border-radius: 8px;
+    padding: 8px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    margin-top: 16px;
+
+    &:hover {
+      color: #2f383d;
+      transform: scale(1.1, 1.1);
+    }
+
+    &:active {
+      transform: scale(0.8, 0.8);
+    }
   }
 }
 </style>

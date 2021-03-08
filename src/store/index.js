@@ -18,6 +18,7 @@ export default createStore({
       liked_content: [],
       token: "",
       image: null,
+      wallpaper: null,
     },
     other: {
       username: "",
@@ -25,6 +26,7 @@ export default createStore({
       last_name: "",
       email: "",
       image: null,
+      wallpaper: null,
       followers: [],
       following: [],
     },
@@ -50,6 +52,14 @@ export default createStore({
 
     SET_USER_AVATAR(state, avatar) {
       state.user.image = avatar;
+    },
+
+    SET_USER_WALLPAPER(state, wallpaper) {
+      state.user.wallpaper = wallpaper;
+    },
+
+    SET_OTHER_WALLPAPER(state, wallpaper) {
+      state.other.wallpaper = wallpaper;
     },
 
     SET_USER_FRIENDS(state, friends) {
@@ -158,6 +168,14 @@ export default createStore({
 
     setUserAvatar({ commit }, avatar) {
       commit("SET_USER_AVATAR", avatar);
+    },
+
+    setUserWallpaper({ commit }, wallpaper) {
+      commit("SET_USER_WALLPAPER", wallpaper);
+    },
+
+    setOtherWallpaper({ commit }, wallpaper) {
+      commit("SET_OTHER_WALLPAPER", wallpaper);
     },
 
     setUserFriends({ commit }, friends) {

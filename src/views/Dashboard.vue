@@ -1,4 +1,10 @@
 <template>
+  <img
+    v-if="wallpaper !== null"
+    class="wallpaper"
+    :src="`http://0.0.0.0:8000${wallpaper}/`"
+    alt="wallpaper"
+  />
   <div class="container">
     <transition class="animate__animated animate__fadeInLeft animate__delay-1s">
       <div class="aside" :key="asideResetIndex">
@@ -66,6 +72,18 @@
             </span>
           </button>
         </div>
+
+        <div class="wallpaper_button_case">
+          <button class="wallpaper_button" @click="switchUploadWallpaper">
+            change wallpaper
+          </button>
+          <div v-if="state.wallpaperInputOpened">
+            <input type="file" @change="onWallpaperFileSelected" />
+            <button class="submit_wallpaper_button" @click="uploadWallpaper">
+              submit!
+            </button>
+          </div>
+        </div>
         <span class="error_message" v-show="state.searchFailed"
           >user not found</span
         >
@@ -88,7 +106,7 @@
 
 <script>
 import store from "../store";
-import { onBeforeMount, onMounted, reactive, ref } from "vue";
+import { onBeforeMount, onMounted, reactive, ref, computed } from "vue";
 import axios from "axios";
 import ContentCard from "../components/ContentCard";
 import CreationArea from "../components/CreationArea";
@@ -105,9 +123,13 @@ export default {
     const state = reactive({
       uploadAvatarInputShow: false,
       avatarFile: null,
+      wallpaperFile: null,
       search: "",
       searchFailed: false,
+      wallpaperInputOpened: false,
     });
+
+    const wallpaper = computed(() => store.state.user.wallpaper);
 
     const asideResetIndex = ref(0);
 
@@ -126,6 +148,10 @@ export default {
 
     function switchUploadAvatar() {
       state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
+    }
+
+    function switchUploadWallpaper() {
+      state.wallpaperInputOpened = !state.wallpaperInputOpened;
     }
 
     async function uploadAvatar() {
@@ -147,8 +173,30 @@ export default {
       }
     }
 
+    async function uploadWallpaper() {
+      if (state.wallpaperFile !== null) {
+        const fd = new FormData();
+        fd.append("image", state.wallpaperFile, state.wallpaperFile.name);
+
+        await axios
+          .post("http://0.0.0.0:8000/api/accounts/wallpaper/", fd, imageConfig)
+          .then((response) => response.data)
+          .then((data) => {
+            console.log(data);
+          });
+
+        switchUploadWallpaper();
+        loadUserWallpaper();
+        state.wallpaperFile = null;
+      }
+    }
+
     function onAvatarFileSelected(event) {
       state.avatarFile = event.target.files[0];
+    }
+
+    function onWallpaperFileSelected(event) {
+      state.wallpaperFile = event.target.files[0];
     }
 
     function loadUserAvatar() {
@@ -157,6 +205,15 @@ export default {
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUserAvatar", data.image);
+        });
+    }
+
+    function loadUserWallpaper() {
+      axios
+        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
+        .then((response) => response.data)
+        .then((data) => {
+          store.dispatch("setUserWallpaper", data.wallpaper);
         });
     }
 
@@ -185,18 +242,22 @@ export default {
     }
 
     onBeforeMount(getTimeline);
-    onMounted(store.dispatch("unsetOther"));
     onMounted(loadUserAvatar);
+    onMounted(loadUserWallpaper);
     onMounted(loadUserFriends);
 
     return {
       store,
       reactive,
       state,
+      wallpaper,
       asideResetIndex,
       switchUploadAvatar,
+      switchUploadWallpaper,
       uploadAvatar,
+      uploadWallpaper,
       onAvatarFileSelected,
+      onWallpaperFileSelected,
       searchForUser,
       ContentCard,
       CreationArea,
@@ -206,6 +267,18 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.wallpaper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  max-width: 100%;
+  min-height: 100vh;
+  z-index: 0;
+}
+
 .container {
   display: grid;
   grid-gap: 10px;
@@ -233,7 +306,8 @@ export default {
     min-height: 86vh;
     max-height: fit-content;
     grid-area: aside;
-    background-color: #043156;
+    backdrop-filter: blur(8px);
+    background-color: rgba($color: #043156, $alpha: 0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -305,7 +379,8 @@ export default {
     }
 
     .user_status,
-    .user_search {
+    .user_search,
+    .wallpaper_button_case {
       margin: 12px;
       backdrop-filter: brightness(80%);
       width: 16vw;
@@ -381,7 +456,8 @@ export default {
   .timeline {
     height: fit-content;
     grid-area: timeline;
-    background-color: slategrey;
+    backdrop-filter: blur(8px);
+    background-color: rgba($color: slategrey, $alpha: 0.5);
     min-height: fit-content;
     padding-bottom: 30px;
   }

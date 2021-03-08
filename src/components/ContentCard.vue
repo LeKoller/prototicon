@@ -1,7 +1,7 @@
 <template>
   <div
     class="card"
-    v-for="content in store.state.timeline"
+    v-for="content in timeline"
     :key="content.id"
     :content="content"
   >
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, computed } from "vue";
 import store from "../store";
 import { getTimeline } from "../helper.js";
 import CommentsBox from "./CommentsBox";
@@ -74,6 +74,8 @@ export default {
     const state = reactive({
       isLiked: {},
     });
+
+    const timeline = computed(() => store.state.timeline);
 
     const config = {
       headers: {
@@ -155,6 +157,7 @@ export default {
     return {
       store,
       state,
+      timeline,
       deleteContent,
       config,
       loadOtherUser,

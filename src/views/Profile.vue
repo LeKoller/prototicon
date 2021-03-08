@@ -1,7 +1,8 @@
 <template>
   <img
+    v-if="wallpaper !== null"
     class="wallpaper"
-    src="https://i.pinimg.com/originals/85/86/1a/85861a4bde5265ac45f18c781cf88465.jpg"
+    :src="`http://0.0.0.0:8000${wallpaper}/`"
     alt="wallpaper"
   />
   <div class="container">
@@ -22,7 +23,7 @@
           />
         </div>
 
-        <div class="follow_case">
+        <div class="follow_case" v-if="!isThisMyProfile">
           <button
             class="follow_button is_following"
             v-if="isFollowing"
@@ -39,18 +40,14 @@
               volunteer_activism
             </span>
             <a href="">Followers</a>:
-            <span class="status_data">{{
-              store.state.other.followers.length
-            }}</span>
+            <span class="status_data">{{ followers }}</span>
           </h4>
           <h4>
             <span class="material-icons status_icons">
               follow_the_signs
             </span>
             <a href="">Following</a>:
-            <Following class="status_data">{{
-              store.state.other.following.length
-            }}</Following>
+            <Following class="status_data">{{ following }}</Following>
           </h4>
         </div>
       </div>
@@ -87,8 +84,8 @@
 <script>
 import { computed } from "vue";
 import store from "../store";
-import { getOtherFeed } from "../helper.js";
-import { onBeforeMount } from "@vue/runtime-core";
+import { getOtherFeed, updateOther } from "../helper.js";
+import { onBeforeMount, onMounted } from "@vue/runtime-core";
 import ContentCard from "../components/ContentCard";
 import axios from "axios";
 
@@ -110,6 +107,13 @@ export default {
       return output;
     });
 
+    const isThisMyProfile = computed(
+      () => store.state.other.username === store.state.user.username
+    );
+    const followers = computed(() => store.state.other.followers.length);
+    const following = computed(() => store.state.other.following.length);
+    const wallpaper = computed(() => store.state.other.wallpaper);
+
     const config = {
       headers: {
         Authorization: `Token ${store.state.user.token}`,
@@ -127,17 +131,33 @@ export default {
         .then((data) => {
           store.dispatch("setUserFollowing", data.following);
         });
+
+      updateOther();
+    }
+
+    function loadOtherWallpaper() {
+      axios
+        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
+        .then((response) => response.data)
+        .then((data) => {
+          store.dispatch("setUserWallpaper", data.wallpaper);
+        });
     }
 
     onBeforeMount(() => {
       getOtherFeed();
     });
+    onMounted(loadOtherWallpaper);
 
     return {
       store,
-      ContentCard,
       isFollowing,
+      isThisMyProfile,
+      followers,
+      following,
+      wallpaper,
       follow,
+      ContentCard,
     };
   },
 };
@@ -307,7 +327,7 @@ export default {
     height: fit-content;
     grid-area: creation;
     backdrop-filter: blur(8px);
-    background-color: rgba($color: #b08cfa, $alpha: 0.5);
+    background-color: rgba($color: #b08cfa, $alpha: 0.7);
     display: flex;
     justify-content: space-between;
     padding-left: 16px;

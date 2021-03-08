@@ -37,3 +37,15 @@ export async function getOtherFeed() {
   store.dispatch("unsetTimeline");
   store.dispatch("setTimeline", contents);
 }
+
+export async function updateOther() {
+  const other = await axios
+    .get(
+      `http://0.0.0.0:8000/api/accounts/${store.state.other.username}/`,
+      config
+    )
+    .then((response) => response.data)
+    .then((data) => data);
+
+  store.dispatch("setOther", other);
+}

@@ -210,7 +210,8 @@ export default {
 .creation_area {
   height: fit-content;
   grid-area: creation;
-  background-color: steelblue;
+  backdrop-filter: blur(8px);
+  background-color: rgba($color: steelblue, $alpha: 0.7);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
