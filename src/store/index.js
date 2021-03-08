@@ -15,6 +15,7 @@ export default createStore({
       followers: [],
       following: [],
       friends: [],
+      liked_content: [],
       token: "",
       image: null,
     },
@@ -28,6 +29,18 @@ export default createStore({
       following: [],
     },
     timeline: [],
+    modalSwitch: false,
+    creation: {
+      uploadText: false,
+      uploadImage: false,
+      content: {
+        id: NaN,
+        title: "",
+        text: "",
+        image: null,
+        is_private: false,
+      },
+    },
   },
 
   mutations: {
@@ -43,11 +56,16 @@ export default createStore({
       state.user.friends = friends;
     },
 
+    SET_USER_FOLLOWING(state, following) {
+      state.user.following = following;
+    },
+
     LOGOUT(state) {
       state.user.username = "";
       state.user.followers = [];
       state.user.following = [];
       state.user.friends = [];
+      state.user.liked_content = [];
       state.user.token = "";
       state.user.image = null;
 
@@ -56,6 +74,18 @@ export default createStore({
 
     SET_OTHER(state, receivedOther) {
       state.other = receivedOther;
+    },
+
+    UNSET_OTHER(state) {
+      state.other = {
+        username: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        image: null,
+        followers: [],
+        following: [],
+      };
     },
 
     SET_TIMELINE(state, contents) {
@@ -69,12 +99,55 @@ export default createStore({
       state.timeline = contents;
     },
 
+    UNSET_TIMELINE(state) {
+      state.timeline = [];
+    },
+
     SET_CONTENT_TITLE_EMPTY(state, content_id) {
       state.timeline.forEach((content) => {
         if (content.id === content_id) {
           content.title = "";
         }
       });
+    },
+
+    SET_USER_LIKES(state, likes) {
+      state.user.liked_content = likes;
+    },
+
+    SET_MODAL_SWITCH(state) {
+      state.modalSwitch = !state.modalSwitch;
+    },
+
+    SET_MODAL_SWITCH_OFF(state) {
+      state.modalSwitch = false;
+    },
+
+    SET_UPLOAD_TEXT(state) {
+      state.creation.uploadText = !state.creation.uploadText;
+    },
+
+    SET_UPLOAD_IMAGE(state) {
+      state.creation.uploadImage = !state.creation.uploadImage;
+    },
+
+    SET_PRIVATE(state) {
+      state.creation.content.is_private = !state.creation.content.is_private;
+    },
+
+    SET_CREATION_CONTENT_IMAGE(state, imageFile) {
+      state.creation.content.image = imageFile;
+    },
+
+    SET_CREATION_ID(state, id) {
+      state.creation.content.id = id;
+    },
+
+    SET_CREATION_FIELDS(state, content) {
+      state.creation.content.title = content.title;
+      state.creation.content.text = content.text;
+      state.creation.content.image = null;
+      state.creation.content.is_private = content.is_private;
     },
   },
 
@@ -91,6 +164,10 @@ export default createStore({
       commit("SET_USER_FRIENDS", friends);
     },
 
+    setUserFollowing({ commit }, following) {
+      commit("SET_USER_FOLLOWING", following);
+    },
+
     logout({ commit }) {
       commit("LOGOUT");
     },
@@ -99,12 +176,56 @@ export default createStore({
       commit("SET_OTHER", receivedOther);
     },
 
+    unsetOther({ commit }) {
+      commit("UNSET_OTHER");
+    },
+
     setTimeline({ commit }, contents) {
       commit("SET_TIMELINE", contents);
     },
 
+    unsetTimeline({ commit }) {
+      commit("UNSET_TIMELINE");
+    },
+
     setContentTitleEmpty({ commit }, content_id) {
       commit("SET_CONTENT_TITLE_EMPTY", content_id);
+    },
+
+    setUserLikes({ commit }, likes) {
+      commit("SET_USER_LIKES", likes);
+    },
+
+    setModalSwitch({ commit }) {
+      commit("SET_MODAL_SWITCH");
+    },
+
+    setModalSwitchOff({ commit }) {
+      commit("SET_MODAL_SWITCH_OFF");
+    },
+
+    setUploadText({ commit }) {
+      commit("SET_UPLOAD_TEXT");
+    },
+
+    setUploadImage({ commit }) {
+      commit("SET_UPLOAD_IMAGE");
+    },
+
+    setPrivate({ commit }) {
+      commit("SET_PRIVATE");
+    },
+
+    setCreationContentImage({ commit }, imageFile) {
+      commit("SET_CREATION_CONTENT_IMAGE", imageFile);
+    },
+
+    setCreationId({ commit }, id) {
+      commit("SET_CREATION_ID", id);
+    },
+
+    setCreationFields({ commit }, content) {
+      commit("SET_CREATION_FIELDS", content);
     },
   },
 

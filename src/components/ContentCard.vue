@@ -10,7 +10,9 @@
         <div class="author_case">
           <h4>
             author:
-            <a href="">{{ content.author_username }}</a>
+            <a @click="loadOtherUser(content.author_username)">{{
+              content.author_username
+            }}</a>
           </h4>
         </div>
         <h3 class="title">{{ content.title }}</h3>
@@ -26,43 +28,140 @@
           <CommentsBox :content_id="content.id" />
         </div>
       </div>
-      <button
-        class="delete_buttton"
-        v-if="store.state.user.username === content.author_username"
-        @click="deleteContent(content.id)"
-      >
-        delete
-      </button>
+      <div class="like_or_edit_delete_butttons">
+        <div v-if="store.state.user.username === content.author_username">
+          <button class="edit_button" @click="showEditionModal(content)">
+            edit
+          </button>
+          <button class="delete_buttton" @click="deleteContent(content.id)">
+            delete
+          </button>
+        </div>
+        <div class="not_your_post" v-else>
+          <div>
+            <span class="likes_count">{{ content.likes.length }}</span>
+            <span
+              class="material-icons heart_icon"
+              :class="{ liked: state.isLiked[content.id] }"
+            >
+              favorite
+            </span>
+          </div>
+          <button class="like_button" @click="likeContent(content.id)">
+            like
+          </button>
+        </div>
+        <Modal v-if="store.state.modalSwitch" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import store from "@/store";
-import { deleteContent } from "../helper.js";
+import { onMounted, reactive } from "vue";
+import store from "../store";
+import { getTimeline } from "../helper.js";
 import CommentsBox from "./CommentsBox";
+import axios from "axios";
+import router from "../router/index.js";
 
 export default {
   name: "ContentCard",
   components: {
     CommentsBox,
   },
-  props: {
-    timelineResetIndex: Number,
-  },
-  setup(props) {
+  setup() {
+    const state = reactive({
+      isLiked: {},
+    });
+
     const config = {
       headers: {
         Authorization: `Token ${store.state.user.token}`,
       },
     };
 
+    async function loadOtherUser(username) {
+      await axios
+        .get(`http://0.0.0.0:8000/api/accounts/${username}/`, config)
+        .then((response) => response.data)
+        .then((data) => {
+          store.dispatch("setOther", data);
+        });
+
+      router.push("/profile");
+    }
+
+    function updateUserLikes() {
+      axios
+        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
+        .then((response) => response.data)
+        .then((data) => {
+          store.dispatch("setUserLikes", data.liked_content);
+        });
+    }
+
+    async function likeContent(content_id) {
+      await axios
+        .post(
+          `http://0.0.0.0:8000/api/contents/like/${content_id}/`,
+          {},
+          config
+        )
+        .then((response) => response.data)
+        .then((data) => data);
+
+      updateUserLikes();
+      state.isLiked[content_id] = !state.isLiked[content_id];
+    }
+
+    function isContentLiked() {
+      const idsList = store.state.timeline.map((content) => content.id);
+      const likedIds = store.state.user.liked_content.map(
+        (content) => content.id
+      );
+
+      idsList.forEach((id) => {
+        if (likedIds.includes(id)) {
+          state.isLiked[id] = true;
+        } else {
+          state.isLiked[id] = false;
+        }
+      });
+    }
+
+    function hideDeletedContent(content_id) {
+      store.dispatch("setContentTitleEmpty", content_id);
+      getTimeline();
+    }
+
+    async function deleteContent(content_id) {
+      await axios
+        .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
+        .then((response) => response.data)
+        .then((data) => data);
+
+      hideDeletedContent(content_id);
+    }
+
+    function showEditionModal(content) {
+      store.dispatch("setCreationId", content.id);
+      store.dispatch("setCreationFields", content);
+      store.dispatch("setModalSwitch");
+    }
+
+    onMounted(isContentLiked);
+
     return {
       store,
+      state,
       deleteContent,
-      props,
       config,
+      loadOtherUser,
       CommentsBox,
+      isContentLiked,
+      likeContent,
+      showEditionModal,
     };
   },
 };
@@ -90,6 +189,7 @@ export default {
         color: #b08cfa;
         text-decoration: none;
         transition: all 0.25s ease;
+        cursor: pointer;
 
         &:hover {
           color: #4bb6ff;
@@ -123,7 +223,7 @@ export default {
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: #312942;
+      background: #093156;
     }
 
     .content_image {
@@ -144,29 +244,82 @@ export default {
     }
   }
 
-  .delete_buttton {
+  .like_or_edit_delete_butttons {
     position: absolute;
     top: 20px;
     right: 20px;
-    background-color: slategrey;
-    color: #d3dce6;
-    outline: none;
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    font-family: "Fredoka One", cursive;
-    font-weight: normal;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.25s ease;
 
-    &:hover {
-      color: #ff817e;
-      transform: scale(1.1, 1.1);
+    button {
+      font-family: "Fredoka One", cursive;
+      font-weight: normal;
+      font-size: 1rem;
+      background-color: slategrey;
+      color: #d3dce6;
+      outline: none;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
 
-    &:active {
-      transform: scale(0.8, 0.8);
+    .not_your_post {
+      display: flex;
+
+      .likes_count {
+        position: relative;
+        bottom: 4px;
+        font-size: 1.6rem;
+        color: slategrey;
+      }
+
+      .heart_icon {
+        position: relative;
+        color: slategrey;
+        margin-right: 4px;
+        font-size: 2rem;
+        top: 4px;
+      }
+
+      .liked {
+        color: #b08cfa;
+        text-shadow: 0 0 16px #b08cfa;
+      }
+    }
+
+    .delete_buttton {
+      &:hover {
+        color: #ff817e;
+        transform: scale(1.1, 1.1);
+      }
+
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
+    }
+
+    .edit_button {
+      margin-right: 8px;
+
+      &:hover {
+        color: #4bb6ff;
+        transform: scale(1.1, 1.1);
+      }
+
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
+    }
+
+    .like_button {
+      &:hover {
+        color: #b08cfa;
+        transform: scale(1.1, 1.1);
+      }
+
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
     }
   }
 }

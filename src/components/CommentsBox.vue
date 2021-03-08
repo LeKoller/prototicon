@@ -125,6 +125,9 @@ export default {
     color: steelblue;
     background-color: #d3dce6;
     resize: none;
+    width: 100%;
+    height: 2rem;
+    margin: 4px;
   }
 
   .send_button {

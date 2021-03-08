@@ -20,14 +20,19 @@
     <router-link class="link" to="/about">About</router-link>
   </div>
   <router-view />
+  <Modal v-if="store.state.modalSwitch" />
 </template>
 
 <script>
 import { computed } from "vue";
 import store from "./store";
+import Modal from "./components/Modal";
 
 export default {
   name: "App",
+  components: {
+    Modal,
+  },
   setup() {
     const isLogged = computed(() => store.state.user.token !== "");
 
@@ -64,7 +69,7 @@ export default {
       background-color: transparent;
       color: #d3dce6;
       cursor: pointer;
-      transition: all 0.25s ease;
+      transition: all 0.25s ease-in-out;
 
       &:hover {
         color: #73e3e7;
@@ -91,6 +96,7 @@ export default {
   display: flex;
   justify-content: center;
   position: relative;
+  z-index: 998;
 
   .link {
     margin: 0 1rem 0 1rem;

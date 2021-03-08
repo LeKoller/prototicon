@@ -1,27 +1,36 @@
 <template>
+  <img
+    class="wallpaper"
+    src="https://i.pinimg.com/originals/85/86/1a/85861a4bde5265ac45f18c781cf88465.jpg"
+    alt="wallpaper"
+  />
   <div class="container">
     <transition class="animate__animated animate__fadeInLeft animate__delay-1s">
-      <div class="aside" :key="asideResetIndex">
+      <div class="aside">
         <div class="avatar_case">
           <img
             class="profile_picture"
             src="../assets/default_user_avatar.png"
             alt="Profile pricture"
             v-if="store.state.user.image === null"
-            @click="switchUploadAvatar"
           />
           <img
             class="profile_picture"
-            :src="`http://0.0.0.0:8000${store.state.user.image}/`"
+            :src="`http://0.0.0.0:8000${store.state.other.image}/`"
             alt="Profile pricture"
             v-else
-            @click="switchUploadAvatar"
           />
         </div>
 
-        <div class="upload_avatar_case" v-show="state.uploadAvatarInputShow">
-          <input type="file" @change="onAvatarFileSelected" />
-          <button @click="uploadAvatar">change picture</button>
+        <div class="follow_case">
+          <button
+            class="follow_button is_following"
+            v-if="isFollowing"
+            @click="follow"
+          >
+            following
+          </button>
+          <button class="follow_button" v-else @click="follow">follow</button>
         </div>
 
         <div class="user_status">
@@ -31,7 +40,7 @@
             </span>
             <a href="">Followers</a>:
             <span class="status_data">{{
-              store.state.user.followers.length
+              store.state.other.followers.length
             }}</span>
           </h4>
           <h4>
@@ -40,40 +49,29 @@
             </span>
             <a href="">Following</a>:
             <Following class="status_data">{{
-              store.state.user.following.length
+              store.state.other.following.length
             }}</Following>
           </h4>
-          <h4>
-            <span class="material-icons status_icons">
-              mood
-            </span>
-            <a href="">Friends</a>:
-            <span class="status_data">{{
-              store.state.user.friends.length
-            }}</span>
-          </h4>
         </div>
-
-        <div class="user_search">
-          <input
-            type="search"
-            placeholder="search user"
-            v-model="state.search"
-          />
-          <button class="search_button" @click="searchForUser">
-            <span id="search_users_icon" class="material-icons">
-              person_search
-            </span>
-          </button>
-        </div>
-        <span class="error_message" v-show="state.searchFailed"
-          >user not found</span
-        >
       </div>
     </transition>
 
     <transition class="animate__animated animate__fadeInRight">
-      <CreationArea />
+      <div class="creation_area">
+        <h3>this is {{ store.state.other.username }}!</h3>
+        <div>
+          <h3 class="data_fields">name</h3>
+          <h4>
+            {{ store.state.other.first_name }} {{ store.state.other.last_name }}
+          </h4>
+        </div>
+        <div>
+          <h3 class="data_fields">email</h3>
+          <h4>
+            {{ store.state.other.email }}
+          </h4>
+        </div>
+      </div>
     </transition>
 
     <transition class="animate__animated animate__fadeInUp">
@@ -87,29 +85,30 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import store from "../store";
-import { onBeforeMount, onMounted, reactive, ref } from "vue";
-import axios from "axios";
+import { getOtherFeed } from "../helper.js";
+import { onBeforeMount } from "@vue/runtime-core";
 import ContentCard from "../components/ContentCard";
-import CreationArea from "../components/CreationArea";
-import { getTimeline } from "../helper.js";
-import router from "../router";
+import axios from "axios";
 
 export default {
-  name: "Dashboard",
+  name: "Profile",
   components: {
-    CreationArea,
     ContentCard,
   },
   setup() {
-    const state = reactive({
-      uploadAvatarInputShow: false,
-      avatarFile: null,
-      search: "",
-      searchFailed: false,
-    });
+    const isFollowing = computed(() => {
+      let output = false;
 
-    const asideResetIndex = ref(0);
+      store.state.user.following.forEach((user) => {
+        if (store.state.other.username === user.username) {
+          output = true;
+        }
+      });
+
+      return output;
+    });
 
     const config = {
       headers: {
@@ -117,95 +116,46 @@ export default {
       },
     };
 
-    const imageConfig = {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Token ${store.state.user.token}`,
-      },
-    };
-
-    function switchUploadAvatar() {
-      state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
-    }
-
-    async function uploadAvatar() {
-      if (state.avatarFile !== null) {
-        const fd = new FormData();
-        fd.append("image", state.avatarFile, state.avatarFile.name);
-
-        await axios
-          .post("http://0.0.0.0:8000/api/accounts/avatar/", fd, imageConfig)
-          .then((response) => response.data)
-          .then((data) => {
-            console.log(data);
-          });
-
-        switchUploadAvatar();
-        loadUserAvatar();
-        asideResetIndex.value++;
-        state.avatarFile = null;
-      }
-    }
-
-    function onAvatarFileSelected(event) {
-      state.avatarFile = event.target.files[0];
-    }
-
-    function loadUserAvatar() {
-      axios
-        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
-        .then((response) => response.data)
-        .then((data) => {
-          store.dispatch("setUserAvatar", data.image);
-        });
-    }
-
-    async function loadUserFriends() {
+    async function follow() {
       await axios
-        .get("http://0.0.0.0:8000/api/follow/", config)
+        .post(
+          `http://0.0.0.0:8000/api/follow/${store.state.other.username}/`,
+          {},
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
-          store.dispatch("setUserFriends", data.friends);
+          store.dispatch("setUserFollowing", data.following);
         });
     }
 
-    async function searchForUser() {
-      await axios
-        .get(`http://0.0.0.0:8000/api/accounts/${state.search}/`, config)
-        .then((response) => response.data)
-        .then((data) => {
-          state.searchFailed = false;
-          store.dispatch("setOther", data);
-          router.push("/profile");
-        })
-        .catch(() => {
-          state.searchFailed = true;
-          asideResetIndex.value++;
-        });
-    }
-
-    onBeforeMount(getTimeline);
-    onMounted(store.dispatch("unsetOther"));
-    onMounted(loadUserAvatar);
-    onMounted(loadUserFriends);
+    onBeforeMount(() => {
+      getOtherFeed();
+    });
 
     return {
       store,
-      reactive,
-      state,
-      asideResetIndex,
-      switchUploadAvatar,
-      uploadAvatar,
-      onAvatarFileSelected,
-      searchForUser,
       ContentCard,
-      CreationArea,
+      isFollowing,
+      follow,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.wallpaper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  max-width: 100%;
+  min-height: 100vh;
+  z-index: 0;
+}
+
 .container {
   display: grid;
   grid-gap: 10px;
@@ -213,6 +163,19 @@ export default {
   grid-template-rows: minmax(min-content, 45px) 1fr 18px; /* this is just magic *-* */
   grid-template-areas: "aside creation" "aside timeline";
   margin: 12px;
+
+  .follow_case {
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    .follow_button {
+      width: 16vw;
+    }
+
+    .is_following {
+      background-color: slategrey;
+    }
+  }
 
   .error_message {
     color: #ff817e;
@@ -233,7 +196,8 @@ export default {
     min-height: 86vh;
     max-height: fit-content;
     grid-area: aside;
-    background-color: #043156;
+    backdrop-filter: blur(8px);
+    background-color: rgba($color: #043156, $alpha: 0.7);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -304,21 +268,23 @@ export default {
       color: #b08cfa;
     }
 
-    .user_status,
-    .user_search {
+    .user_status {
       margin: 12px;
-      backdrop-filter: brightness(80%);
+      backdrop-filter: brightness(70%);
       width: 16vw;
       border-radius: 8px;
       padding-top: 8px;
       padding-bottom: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
 
       h4 {
         color: slategrey;
         margin: 0.2rem;
         font-weight: normal;
         text-align: start;
-        margin-left: 20px;
 
         a {
           text-decoration: none;
@@ -335,45 +301,116 @@ export default {
         }
       }
     }
+  }
 
-    .user_search {
+  .creation_area {
+    height: fit-content;
+    grid-area: creation;
+    backdrop-filter: blur(8px);
+    background-color: rgba($color: #b08cfa, $alpha: 0.5);
+    display: flex;
+    justify-content: space-between;
+    padding-left: 16px;
+    padding-right: 48px;
+
+    h3 {
+      color: #d3dce6;
+      font-family: "Fredoka One", cursive;
+      font-weight: normal;
+      margin-top: 6px;
+    }
+
+    .data_fields {
+      color: rgb(136, 160, 185);
+    }
+
+    h4 {
+      color: #d3dce6;
+    }
+
+    form {
       display: flex;
-      padding-top: 20px;
+      flex-direction: column;
 
-      .search_button {
-        margin-left: 16px;
+      textarea {
+        width: 72vw;
+        resize: none;
+      }
+
+      .image_field {
+        width: 62vw;
+      }
+      .image_field::-webkit-file-upload-button {
         outline: none;
         border: none;
         border-radius: 8px;
         padding: 4px;
-        background-color: transparent;
-        color: slategrey;
+        background-color: steelblue;
+        color: #d3dce6;
         cursor: pointer;
         transition: all 0.25s ease;
-        position: relative;
-        right: 8px;
-        top: 4px;
 
         &:hover {
-          transform: scale(1.05, 1.05);
-          text-shadow: 0 0 24px #4bb6ff;
-          color: #4bb6ff;
+          color: #73e3e7;
         }
 
         &:active {
           transform: scale(0.8, 0.8);
         }
-
-        #search_users_icon {
-          position: relative;
-          bottom: 0.4rem;
-          right: 0.2rem;
-        }
       }
 
-      input {
-        margin-left: 20px;
-        width: 11vw;
+      .title_and_buttons {
+        display: flex;
+        justify-content: space-between;
+
+        input {
+          margin-right: 8px;
+          width: 62vw;
+        }
+
+        .submit_button {
+          background-color: #4bb6ff;
+          color: #d3dce6;
+          font-family: "Fredoka One", cursive;
+          font-weight: normal;
+          font-size: 1.2rem;
+
+          &:hover {
+            color: #d3dce6;
+          }
+        }
+
+        button {
+          outline: none;
+          border: none;
+          border-radius: 8px;
+          background-color: transparent;
+          color: #d3dce6;
+          padding: 4px 12px 4px 12px;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          margin-bottom: 12px;
+
+          &:hover {
+            transform: scale(1.05, 1.05);
+            text-shadow: 0 0 24px #73e3e7;
+            color: #73e3e7;
+          }
+
+          &:active {
+            transform: scale(0.8, 0.8);
+          }
+
+          &:disabled {
+            color: dimgray;
+            transform: scale(1, 1);
+            cursor: default;
+          }
+        }
+        .private {
+          color: #b08cfa;
+          text-shadow: 0 0 24px #b08cfa;
+        }
       }
     }
   }
@@ -381,9 +418,11 @@ export default {
   .timeline {
     height: fit-content;
     grid-area: timeline;
-    background-color: slategrey;
     min-height: fit-content;
     padding-bottom: 30px;
+
+    backdrop-filter: blur(8px);
+    background-color: rgba($color: slategrey, $alpha: 0.5);
   }
 }
 </style>

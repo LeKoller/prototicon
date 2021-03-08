@@ -1,6 +1,6 @@
 import axios from "axios";
 import store from "./store";
-import config from "./components/ContentCard";
+import config from "./views/Dashboard";
 
 function getFollowingUsernames() {
   return store.state.user.following.map((user) => user.username);
@@ -20,20 +20,20 @@ export async function getTimeline() {
         contents = [...contents, ...data.contents];
       });
 
+    store.dispatch("unsetTimeline");
     store.dispatch("setTimeline", contents);
   }
 }
 
-export function hideDeletedContent(content_id) {
-  store.dispatch("setContentTitleEmpty", content_id);
-  getTimeline();
-}
-
-export async function deleteContent(content_id) {
-  await axios
-    .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
+export async function getOtherFeed() {
+  const contents = await axios
+    .get(
+      `http://0.0.0.0:8000/api/contents/${store.state.other.username}/`,
+      config
+    )
     .then((response) => response.data)
-    .then((data) => data);
+    .then((data) => data.contents);
 
-  hideDeletedContent(content_id);
+  store.dispatch("unsetTimeline");
+  store.dispatch("setTimeline", contents);
 }

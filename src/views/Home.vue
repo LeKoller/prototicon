@@ -68,6 +68,7 @@ export default {
             username: data.user.username,
             followers: data.user.followers,
             following: data.user.following,
+            liked_content: data.user.liked_content,
             friends: data.friends,
             token: data.token,
           });
