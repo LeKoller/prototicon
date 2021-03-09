@@ -38,17 +38,18 @@
           </button>
         </div>
         <div class="not_your_post" v-else>
-          <div>
-            <span class="likes_count">{{ content.likes.length }}</span>
-            <span
-              class="material-icons heart_icon"
-              :class="{ liked: state.isLiked[content.id] }"
-            >
-              favorite
-            </span>
-          </div>
           <button class="like_button" @click="likeContent(content.id)">
-            like
+            <div>
+              <span class="likes_count">{{
+                content.likes.length + state.realTimeLike
+              }}</span>
+              <span
+                class="material-icons heart_icon"
+                :class="{ liked: state.isLiked[content.id] }"
+              >
+                favorite
+              </span>
+            </div>
           </button>
         </div>
         <Modal v-if="store.state.modalSwitch" />
@@ -60,7 +61,6 @@
 <script>
 import { onMounted, reactive, computed } from "vue";
 import store from "../store";
-import { getTimeline } from "../helper.js";
 import CommentsBox from "./CommentsBox";
 import axios from "axios";
 import router from "../router/index.js";
@@ -73,6 +73,7 @@ export default {
   setup() {
     const state = reactive({
       isLiked: {},
+      realTimeLike: 0,
     });
 
     const timeline = computed(() => store.state.timeline);
@@ -82,6 +83,29 @@ export default {
         Authorization: `Token ${store.state.user.token}`,
       },
     };
+
+    function getFollowingUsernames() {
+      return store.state.user.following.map((user) => user.username);
+    }
+
+    async function getTimeline() {
+      const usernames = getFollowingUsernames();
+      let contents = [];
+
+      usernames.push(store.state.user.username);
+
+      for (let username of usernames) {
+        await axios
+          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .then((response) => response.data)
+          .then((data) => {
+            contents = [...contents, ...data.contents];
+          });
+
+        store.dispatch("unsetTimeline");
+        store.dispatch("setTimeline", contents);
+      }
+    }
 
     async function loadOtherUser(username) {
       await axios
@@ -114,6 +138,13 @@ export default {
         .then((data) => data);
 
       updateUserLikes();
+
+      if (state.isLiked[content_id]) {
+        state.realTimeLike = 0;
+      } else {
+        state.realTimeLike = 1;
+      }
+
       state.isLiked[content_id] = !state.isLiked[content_id];
     }
 
@@ -152,7 +183,10 @@ export default {
       store.dispatch("setModalSwitch");
     }
 
-    onMounted(isContentLiked);
+    onMounted(() => {
+      isContentLiked();
+      state.realTimeLike = 0;
+    });
 
     return {
       store,
@@ -269,24 +303,39 @@ export default {
     .not_your_post {
       display: flex;
 
-      .likes_count {
-        position: relative;
-        bottom: 4px;
-        font-size: 1.6rem;
-        color: slategrey;
-      }
+      .like_button {
+        background-color: transparent;
 
-      .heart_icon {
-        position: relative;
-        color: slategrey;
-        margin-right: 4px;
-        font-size: 2rem;
-        top: 4px;
-      }
+        &:hover {
+          color: #b08cfa;
+          transform: scale(1.1, 1.1);
+        }
 
-      .liked {
-        color: #b08cfa;
-        text-shadow: 0 0 16px #b08cfa;
+        &:active {
+          transform: scale(0.8, 0.8);
+        }
+
+        .likes_count {
+          position: relative;
+          bottom: 3px;
+          right: 3px;
+          font-size: 1.6rem;
+          font-family: "Nunito";
+          color: slategrey;
+        }
+
+        .heart_icon {
+          position: relative;
+          color: slategrey;
+          margin-right: 4px;
+          font-size: 2rem;
+          top: 4px;
+        }
+
+        .liked {
+          color: #b08cfa;
+          text-shadow: 0 0 16px #b08cfa;
+        }
       }
     }
 
@@ -306,17 +355,6 @@ export default {
 
       &:hover {
         color: #4bb6ff;
-        transform: scale(1.1, 1.1);
-      }
-
-      &:active {
-        transform: scale(0.8, 0.8);
-      }
-    }
-
-    .like_button {
-      &:hover {
-        color: #b08cfa;
         transform: scale(1.1, 1.1);
       }
 

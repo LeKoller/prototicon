@@ -12,13 +12,16 @@ export default createStore({
   state: {
     user: {
       username: "",
+      first_name: "",
+      last_name: "",
+      email: "",
+      token: "",
+      image: null,
+      wallpaper: null,
       followers: [],
       following: [],
       friends: [],
       liked_content: [],
-      token: "",
-      image: null,
-      wallpaper: null,
     },
     other: {
       username: "",
@@ -71,19 +74,49 @@ export default createStore({
     },
 
     LOGOUT(state) {
-      state.user.username = "";
-      state.user.followers = [];
-      state.user.following = [];
-      state.user.friends = [];
-      state.user.liked_content = [];
-      state.user.token = "";
-      state.user.image = null;
+      state.user = {
+        username: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        token: "",
+        image: null,
+        wallpaper: null,
+        followers: [],
+        following: [],
+        friends: [],
+        liked_content: [],
+      };
+
+      state.other = {
+        username: "",
+        first_name: "",
+        last_name: "",
+        email: "",
+        image: null,
+        wallpaper: null,
+        followers: [],
+        following: [],
+      };
 
       router.push("/");
     },
 
     SET_OTHER(state, receivedOther) {
       state.other = receivedOther;
+    },
+
+    SET_OTHER_COPYING_USER(state) {
+      state.other = {
+        username: state.user.username,
+        first_name: state.user.first_name,
+        last_name: state.user.last_name,
+        email: state.user.email,
+        image: state.user.image,
+        wallpaper: state.user.wallpaper,
+        followers: state.user.followers,
+        following: state.user.following,
+      };
     },
 
     UNSET_OTHER(state) {
@@ -159,6 +192,20 @@ export default createStore({
       state.creation.content.image = null;
       state.creation.content.is_private = content.is_private;
     },
+
+    UNSET_CREATION(state) {
+      state.creation = {
+        uploadText: false,
+        uploadImage: false,
+        content: {
+          id: NaN,
+          title: "",
+          text: "",
+          image: null,
+          is_private: false,
+        },
+      };
+    },
   },
 
   actions: {
@@ -192,6 +239,10 @@ export default createStore({
 
     setOther({ commit }, receivedOther) {
       commit("SET_OTHER", receivedOther);
+    },
+
+    setOtherCopyingUser({ commit }) {
+      commit("SET_OTHER_COPYING_USER");
     },
 
     unsetOther({ commit }) {
@@ -244,6 +295,10 @@ export default createStore({
 
     setCreationFields({ commit }, content) {
       commit("SET_CREATION_FIELDS", content);
+    },
+
+    unsetCreation({ commit }) {
+      commit("UNSET_CREATION");
     },
   },
 

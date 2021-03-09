@@ -70,13 +70,9 @@
 <script>
 import store from "../store";
 import axios from "axios";
-import { getTimeline } from "../helper.js";
 
 export default {
   name: "CreationArea",
-  // props: {
-  //   state: Object,
-  // },
   setup() {
     const config = {
       headers: {
@@ -101,6 +97,29 @@ export default {
 
     function enablePrivate() {
       store.dispatch("setPrivate");
+    }
+
+    function getFollowingUsernames() {
+      return store.state.user.following.map((user) => user.username);
+    }
+
+    async function getTimeline() {
+      const usernames = getFollowingUsernames();
+      let contents = [];
+
+      usernames.push(store.state.user.username);
+
+      for (let username of usernames) {
+        await axios
+          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .then((response) => response.data)
+          .then((data) => {
+            contents = [...contents, ...data.contents];
+          });
+
+        store.dispatch("unsetTimeline");
+        store.dispatch("setTimeline", contents);
+      }
     }
 
     function onContentFileSelected(event) {
@@ -154,6 +173,7 @@ export default {
             }
           });
       }
+      store.dispatch("unsetCreation");
       getTimeline();
     }
 
@@ -189,6 +209,7 @@ export default {
             }
           });
       }
+      store.dispatch("unsetCreation");
       store.dispatch("setModalSwitchOff");
       getTimeline();
     }

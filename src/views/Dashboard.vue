@@ -110,7 +110,6 @@ import { onBeforeMount, onMounted, reactive, ref, computed } from "vue";
 import axios from "axios";
 import ContentCard from "../components/ContentCard";
 import CreationArea from "../components/CreationArea";
-import { getTimeline } from "../helper.js";
 import router from "../router";
 
 export default {
@@ -145,6 +144,29 @@ export default {
         Authorization: `Token ${store.state.user.token}`,
       },
     };
+
+    function getFollowingUsernames() {
+      return store.state.user.following.map((user) => user.username);
+    }
+
+    async function getTimeline() {
+      const usernames = getFollowingUsernames();
+      let contents = [];
+
+      usernames.push(store.state.user.username);
+
+      for (let username of usernames) {
+        await axios
+          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .then((response) => response.data)
+          .then((data) => {
+            contents = [...contents, ...data.contents];
+          });
+
+        store.dispatch("unsetTimeline");
+        store.dispatch("setTimeline", contents);
+      }
+    }
 
     function switchUploadAvatar() {
       state.uploadAvatarInputShow = !state.uploadAvatarInputShow;
@@ -242,9 +264,12 @@ export default {
     }
 
     onBeforeMount(getTimeline);
-    onMounted(loadUserAvatar);
-    onMounted(loadUserWallpaper);
-    onMounted(loadUserFriends);
+    onMounted(() => {
+      loadUserAvatar();
+      loadUserWallpaper();
+      loadUserFriends();
+      store.dispatch("unsetOther");
+    });
 
     return {
       store,

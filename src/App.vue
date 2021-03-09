@@ -42,6 +42,7 @@ export default {
     const isLogged = computed(() => store.state.user.token !== "");
 
     function performLogout() {
+      store.dispatch("unsetTimeline");
       store.dispatch("logout");
     }
 
@@ -88,7 +89,7 @@ export default {
 }
 
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "Nunito", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

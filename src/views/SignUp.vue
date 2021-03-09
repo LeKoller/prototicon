@@ -61,6 +61,7 @@
 <script>
 import { reactive, computed } from "vue";
 import axios from "axios";
+import router from "../router";
 
 export default {
   name: "SignUp",
@@ -108,6 +109,8 @@ export default {
           .post("http://0.0.0.0:8000/api/accounts/", state.signInObject)
           .then((response) => console.log(response.status));
       }
+
+      router.push("/");
     }
 
     return {

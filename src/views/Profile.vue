@@ -13,7 +13,7 @@
             class="profile_picture"
             src="../assets/default_user_avatar.png"
             alt="Profile pricture"
-            v-if="store.state.user.image === null"
+            v-if="store.state.other.image === null"
           />
           <img
             class="profile_picture"
@@ -84,7 +84,6 @@
 <script>
 import { computed } from "vue";
 import store from "../store";
-import { getOtherFeed, updateOther } from "../helper.js";
 import { onBeforeMount, onMounted } from "@vue/runtime-core";
 import ContentCard from "../components/ContentCard";
 import axios from "axios";
@@ -144,7 +143,39 @@ export default {
         });
     }
 
+    function loadUserProfileIfNoOtherSetted() {
+      if (store.state.other.username === "") {
+        store.dispatch("setOtherCopyingUser");
+      }
+    }
+
+    async function getOtherFeed() {
+      const contents = await axios
+        .get(
+          `http://0.0.0.0:8000/api/contents/${store.state.other.username}/`,
+          config
+        )
+        .then((response) => response.data)
+        .then((data) => data.contents);
+
+      store.dispatch("unsetTimeline");
+      store.dispatch("setTimeline", contents);
+    }
+
+    async function updateOther() {
+      const other = await axios
+        .get(
+          `http://0.0.0.0:8000/api/accounts/${store.state.other.username}/`,
+          config
+        )
+        .then((response) => response.data)
+        .then((data) => data);
+
+      store.dispatch("setOther", other);
+    }
+
     onBeforeMount(() => {
+      loadUserProfileIfNoOtherSetted();
       getOtherFeed();
     });
     onMounted(loadOtherWallpaper);
@@ -341,7 +372,7 @@ export default {
     }
 
     .data_fields {
-      color: rgb(136, 160, 185);
+      color: #043156;
     }
 
     h4 {
@@ -440,7 +471,6 @@ export default {
     grid-area: timeline;
     min-height: fit-content;
     padding-bottom: 30px;
-
     backdrop-filter: blur(8px);
     background-color: rgba($color: slategrey, $alpha: 0.5);
   }
