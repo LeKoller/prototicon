@@ -13,50 +13,93 @@
     <div v-if="isLogged">
       <router-link class="link" to="/profile">Profile</router-link> |
     </div>
-    <div v-if="!isLogged">
-      <router-link class="link" to="/">Home</router-link> |
-    </div>
+    <div v-else><router-link class="link" to="/">Home</router-link> |</div>
     <div v-if="isLogged">
       <router-link class="link" to="/dashboard">Dashboard</router-link> |
     </div>
-    <div v-if="!isLogged">
+    <div v-else>
       <router-link class="link" to="/signup">Join</router-link> |
     </div>
     <router-link class="link" to="/about">About</router-link>
+    <div v-if="isLogged" class="notifications_case">
+      <a href="#" @click="openNotificationModal" class="link"
+        ><span class="material-icons">
+          announcement
+        </span></a
+      ><span class="unseen_count" v-if="unseenNotificationsCount !== 0"
+        >{{ unseenNotificationsCount }}
+      </span>
+    </div>
   </div>
   <router-view />
   <Modal v-if="store.state.modalSwitch" />
+  <GenericModal
+    type="NotificationsBox"
+    v-if="store.state.notificationsModalSwitch"
+  />
 </template>
 
 <script>
 import { computed } from "vue";
 import store from "./store";
 import Modal from "./components/Modal";
+import GenericModal from "./components/GenericModal";
 
 export default {
   name: "App",
   components: {
     Modal,
+    GenericModal,
   },
   setup() {
     const isLogged = computed(() => store.state.user.token !== "");
+    const unseenNotificationsCount = computed(() => {
+      let count = 0;
+
+      store.state.notifications.forEach((notification) => {
+        if (!notification.is_seen) {
+          count++;
+        }
+      });
+
+      return count;
+    });
 
     function performLogout() {
       store.dispatch("unsetTimeline");
       store.dispatch("logout");
     }
 
+    function openNotificationModal() {
+      store.dispatch("setNotificationsModalSwitch");
+    }
+
     return {
       computed,
       store,
       isLogged,
+      unseenNotificationsCount,
       performLogout,
+      openNotificationModal,
     };
   },
 };
 </script>
 
 <style lang="scss">
+.notifications_case {
+  position: absolute;
+  left: 380px;
+  bottom: 18px;
+
+  .unseen_count {
+    position: relative;
+    right: 8px;
+    bottom: 8px;
+    color: #b08cfa;
+  }
+}
+
 #logout_and_title {
   color: #b08cfa;
   font-family: "Fredoka One", cursive;

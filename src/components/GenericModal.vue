@@ -2,12 +2,20 @@
   <transition name="model">
     <div class="modal_mask">
       <transition class="animate__animated animate__bounceIn">
+        <div class="modal_container" v-if="props.type === 'FollowersGrid'">
+          <FsGrid />
+        </div>
+      </transition>
+      <transition
+        class="animate__animated animate__bounceIn"
+        v-if="props.type === 'NotificationsBox'"
+      >
         <div class="modal_container">
-          <FsGrid v-if="props.type === 'FollowersGrid'" />
+          <NotificationsBox />
         </div>
       </transition>
       <button class="close_modal_button" @click="closeModal">
-        never mind...
+        close
       </button>
     </div>
   </transition>
@@ -16,18 +24,20 @@
 <script>
 import store from "../store";
 import FsGrid from "./FsGrid";
+import NotificationsBox from "./NotificationsBox";
 
 export default {
   name: "Modal",
   components: {
     FsGrid,
+    NotificationsBox,
   },
   props: {
     type: String,
   },
   setup(props) {
     function closeModal() {
-      store.dispatch("setGenericModalSwitch");
+      store.dispatch("unsetAnyModalSwitch");
     }
 
     return {

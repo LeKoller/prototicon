@@ -292,6 +292,7 @@ export default {
       loadUserWallpaper();
       loadUserFriends();
       store.dispatch("unsetOther");
+      store.dispatch("setNotifications");
     });
 
     return {

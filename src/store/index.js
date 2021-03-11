@@ -1,6 +1,7 @@
 import { createStore } from "vuex";
 import router from "../router";
 import createPersistedState from "vuex-persistedstate";
+import axios from "axios";
 
 export default createStore({
   plugins: [
@@ -34,8 +35,10 @@ export default createStore({
       following: [],
     },
     timeline: [],
+    notifications: [],
     modalSwitch: false,
     genericModalSwitch: false,
+    notificationsModalSwitch: false,
     creation: {
       uploadText: false,
       uploadImage: false,
@@ -147,6 +150,40 @@ export default createStore({
       state.timeline = [];
     },
 
+    SET_NOTIFICATIONS(state) {
+      const config = {
+        headers: {
+          Authorization: `Token ${state.user.token}`,
+        },
+      };
+
+      axios
+        .get("http://0.0.0.0:8000/api/notifications/", config)
+        .then((response) => response.data)
+        .then((data) => {
+          state.notifications = data.notifications;
+        });
+    },
+
+    SET_NOTIFICATION_SEEN(state, notification_id) {
+      const config = {
+        headers: {
+          Authorization: `Token ${state.user.token}`,
+        },
+      };
+
+      axios
+        .put(
+          `http://0.0.0.0:8000/api/notifications/${notification_id}/`,
+          {},
+          config
+        )
+        .then((response) => response.data)
+        .then((data) => {
+          console.log(data);
+        });
+    },
+
     SET_CONTENT_TITLE_EMPTY(state, content_id) {
       state.timeline.forEach((content) => {
         if (content.id === content_id) {
@@ -163,8 +200,18 @@ export default createStore({
       state.modalSwitch = !state.modalSwitch;
     },
 
+    UNSET_ANY_MODAL_SWITCH(state) {
+      state.modalSwitch = false;
+      state.genericModalSwitch = false;
+      state.notificationsModalSwitch = false;
+    },
+
     SET_GENERIC_MODAL_SWITCH(state) {
       state.genericModalSwitch = !state.genericModalSwitch;
+    },
+
+    SET_NOTIFICATIONS_MODAL_SWITCH(state) {
+      state.notificationsModalSwitch = !state.notificationsModalSwitch;
     },
 
     SET_MODAL_SWITCH_OFF(state) {
@@ -262,6 +309,14 @@ export default createStore({
       commit("UNSET_TIMELINE");
     },
 
+    setNotifications({ commit }) {
+      commit("SET_NOTIFICATIONS");
+    },
+
+    setNotificationSeen({ commit }, notification_id) {
+      commit("SET_NOTIFICATION_SEEN", notification_id);
+    },
+
     setContentTitleEmpty({ commit }, content_id) {
       commit("SET_CONTENT_TITLE_EMPTY", content_id);
     },
@@ -274,8 +329,16 @@ export default createStore({
       commit("SET_MODAL_SWITCH");
     },
 
+    unsetAnyModalSwitch({ commit }) {
+      commit("UNSET_ANY_MODAL_SWITCH");
+    },
+
     setGenericModalSwitch({ commit }) {
       commit("SET_GENERIC_MODAL_SWITCH");
+    },
+
+    setNotificationsModalSwitch({ commit }) {
+      commit("SET_NOTIFICATIONS_MODAL_SWITCH");
     },
 
     setModalSwitchOff({ commit }) {
