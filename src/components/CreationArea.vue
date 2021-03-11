@@ -259,7 +259,7 @@ export default {
       position: relative;
       font-size: 1.2rem;
       top: 0.1rem;
-      color: #78f280;
+      color: #b08cfa;
     }
 
     color: #d3dce6;

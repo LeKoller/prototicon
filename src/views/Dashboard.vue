@@ -35,7 +35,7 @@
             <span class="material-icons status_icons">
               volunteer_activism
             </span>
-            <a href="">Followers</a>:
+            <a href="#" @click="showFollowersGrid">Followers</a>:
             <span class="status_data">{{
               store.state.user.followers.length
             }}</span>
@@ -44,20 +44,26 @@
             <span class="material-icons status_icons">
               follow_the_signs
             </span>
-            <a href="">Following</a>:
+            <a href="#">Following</a>:
             <Following class="status_data">{{
               store.state.user.following.length
             }}</Following>
           </h4>
-          <h4>
-            <span class="material-icons status_icons">
-              mood
-            </span>
-            <a href="">Friends</a>:
-            <span class="status_data">{{
-              store.state.user.friends.length
-            }}</span>
-          </h4>
+          <div>
+            <h4>
+              <span class="material-icons status_icons">
+                mood
+              </span>
+              <a href="#" @click="showFriendsGrid">Friends</a>:
+              <span class="status_data">{{
+                store.state.user.friends.length
+              }}</span>
+            </h4>
+            <!-- <FsGrid
+              v-if="state.showFriends"
+              :usersList="store.state.user.friends"
+            /> -->
+          </div>
         </div>
 
         <div class="user_search">
@@ -65,6 +71,7 @@
             type="search"
             placeholder="search user"
             v-model="state.search"
+            @keydown.enter="searchForUser"
           />
           <button class="search_button" @click="searchForUser">
             <span id="search_users_icon" class="material-icons">
@@ -102,6 +109,7 @@
       </div>
     </transition>
   </div>
+  <GenericModal type="FollowersGrid" v-if="store.state.genericModalSwitch" />
 </template>
 
 <script>
@@ -110,6 +118,8 @@ import { onBeforeMount, onMounted, reactive, ref, computed } from "vue";
 import axios from "axios";
 import ContentCard from "../components/ContentCard";
 import CreationArea from "../components/CreationArea";
+// import FsGrid from "../components/FsGrid";
+import GenericModal from "../components/GenericModal";
 import router from "../router";
 
 export default {
@@ -117,6 +127,8 @@ export default {
   components: {
     CreationArea,
     ContentCard,
+    // FsGrid,
+    GenericModal,
   },
   setup() {
     const state = reactive({
@@ -126,6 +138,9 @@ export default {
       search: "",
       searchFailed: false,
       wallpaperInputOpened: false,
+      showFollowers: false,
+      showFollowing: false,
+      showFriends: false,
     });
 
     const wallpaper = computed(() => store.state.user.wallpaper);
@@ -263,6 +278,14 @@ export default {
         });
     }
 
+    function showFollowersGrid() {
+      store.dispatch("setGenericModalSwitch");
+    }
+
+    function showFriendsGrid() {
+      state.showFriends = !state.showFriends;
+    }
+
     onBeforeMount(getTimeline);
     onMounted(() => {
       loadUserAvatar();
@@ -284,8 +307,12 @@ export default {
       onAvatarFileSelected,
       onWallpaperFileSelected,
       searchForUser,
+      showFollowersGrid,
+      showFriendsGrid,
       ContentCard,
       CreationArea,
+      // FsGrid,
+      GenericModal,
     };
   },
 };
@@ -389,9 +416,10 @@ export default {
       width: 16vw;
       height: 16vw;
       overflow: hidden;
-
+      cursor: pointer;
       margin-top: 20px;
       border: 1px solid #091d2e;
+      background-color: #091d2e;
       border-radius: 8px;
     }
 

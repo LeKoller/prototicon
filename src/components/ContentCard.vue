@@ -30,11 +30,13 @@
       </div>
       <div class="like_or_edit_delete_butttons">
         <div v-if="store.state.user.username === content.author_username">
+          <button class="delete_buttton" @click="deleteContent(content.id)">
+            <span class="material-icons">
+              delete_outline
+            </span>
+          </button>
           <button class="edit_button" @click="showEditionModal(content)">
             edit
-          </button>
-          <button class="delete_buttton" @click="deleteContent(content.id)">
-            delete
           </button>
         </div>
         <div class="not_your_post" v-else>
@@ -264,6 +266,7 @@ export default {
     }
 
     .content_image {
+      max-width: 50vw;
       max-height: 60vh;
     }
 
@@ -272,8 +275,12 @@ export default {
       max-height: 60vh;
       background-color: rgb(47, 54, 61);
       color: #d3dce6;
-      padding: 10px 60px 10px 60px;
+      padding: 10px 30px 10px 30px;
       text-align: start;
+
+      p {
+        margin: 16px 30px;
+      }
 
       .comment_field {
         width: 100%;
@@ -340,9 +347,18 @@ export default {
     }
 
     .delete_buttton {
+      position: relative;
+      top: 6px;
+      right: 16px;
+      font-size: 1rem;
+      padding: 0;
+      background-color: transparent;
+      color: slategray;
+      transform: scale(1.3, 1.3);
+
       &:hover {
         color: #ff817e;
-        transform: scale(1.1, 1.1);
+        transform: scale(1.5, 1.5);
       }
 
       &:active {

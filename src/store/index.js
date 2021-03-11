@@ -35,6 +35,7 @@ export default createStore({
     },
     timeline: [],
     modalSwitch: false,
+    genericModalSwitch: false,
     creation: {
       uploadText: false,
       uploadImage: false,
@@ -162,6 +163,10 @@ export default createStore({
       state.modalSwitch = !state.modalSwitch;
     },
 
+    SET_GENERIC_MODAL_SWITCH(state) {
+      state.genericModalSwitch = !state.genericModalSwitch;
+    },
+
     SET_MODAL_SWITCH_OFF(state) {
       state.modalSwitch = false;
     },
@@ -267,6 +272,10 @@ export default createStore({
 
     setModalSwitch({ commit }) {
       commit("SET_MODAL_SWITCH");
+    },
+
+    setGenericModalSwitch({ commit }) {
+      commit("SET_GENERIC_MODAL_SWITCH");
     },
 
     setModalSwitchOff({ commit }) {

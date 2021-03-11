@@ -305,9 +305,9 @@ export default {
       width: 16vw;
       height: 16vw;
       overflow: hidden;
-
       margin-top: 20px;
       border: 1px solid #091d2e;
+      background-color: #091d2e;
       border-radius: 8px;
     }
 
