@@ -1,22 +1,21 @@
 <template>
   <transition name="model">
     <div class="modal_mask">
-      <transition class="animate__animated animate__bounceIn">
-        <div class="modal_container" v-if="props.type === 'FollowersGrid'">
-          <FsGrid />
-        </div>
-      </transition>
-      <transition
-        class="animate__animated animate__bounceIn"
-        v-if="props.type === 'NotificationsBox'"
-      >
+      <transition class="animate__animated animate__fadeInUp">
         <div class="modal_container">
-          <NotificationsBox />
+          <div v-if="props.type === 'FollowersGrid'">
+            <FsGrid />
+          </div>
+          <div v-else-if="props.type === 'NotificationsBox'">
+            <NotificationsBox />
+          </div>
+          <button class="close_modal_button" @click="closeModal">
+            <span class="material-icons">
+              clear
+            </span>
+          </button>
         </div>
       </transition>
-      <button class="close_modal_button" @click="closeModal">
-        close
-      </button>
     </div>
   </transition>
 </template>
@@ -67,30 +66,34 @@ export default {
   .modal_container {
     width: 60%;
     padding: 40px;
+    padding-top: 20px;
     background-color: rgba($color: #fff, $alpha: 0.7);
-  }
+    position: relative;
 
-  .close_modal_button {
-    font-family: "Fredoka One", cursive;
-    font-weight: normal;
-    font-size: 1rem;
-    background-color: #b08cfa;
-    color: #d3dce6;
-    outline: none;
-    border: none;
-    border-radius: 8px;
-    padding: 8px;
-    cursor: pointer;
-    transition: all 0.25s ease;
-    margin-top: 16px;
+    .close_modal_button {
+      position: absolute;
+      right: 8px;
+      top: 8px;
+      font-family: "Fredoka One", cursive;
+      font-weight: normal;
+      font-size: 1rem;
+      background-color: transparent;
+      color: #abb9c0;
+      outline: none;
+      border: none;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.25s ease;
 
-    &:hover {
-      color: #2f383d;
-      transform: scale(1.1, 1.1);
-    }
+      &:hover {
+        color: #2f383d;
+        transform: scale(1.1, 1.1);
+      }
 
-    &:active {
-      transform: scale(0.8, 0.8);
+      &:active {
+        transform: scale(0.8, 0.8);
+      }
     }
   }
 }

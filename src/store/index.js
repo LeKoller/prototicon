@@ -34,6 +34,15 @@ export default createStore({
       followers: [],
       following: [],
     },
+    singleContent: {
+      id: NaN,
+      title: "",
+      text: "",
+      image: null,
+      is_private: false,
+      author_username: "",
+      likes: [],
+    },
     timeline: [],
     notifications: [],
     modalSwitch: false,
@@ -135,6 +144,18 @@ export default createStore({
       };
     },
 
+    SET_SINGLE_CONTENT(state, content) {
+      state.singleContent = {
+        id: content.id,
+        title: content.title,
+        text: content.text,
+        image: content.image,
+        is_private: content.is_private,
+        author_username: content.author_username,
+        likes: content.likes,
+      };
+    },
+
     SET_TIMELINE(state, contents) {
       contents.sort((a, b) => {
         if (a.id < b.id) {
@@ -162,6 +183,50 @@ export default createStore({
         .then((response) => response.data)
         .then((data) => {
           state.notifications = data.notifications;
+        });
+    },
+
+    SET_LIKE_NOTIFICATION(state, target_username_and_content_id_array) {
+      const config = {
+        headers: {
+          Authorization: `Token ${state.user.token}`,
+        },
+      };
+
+      const like_data = {
+        of_type: "liked",
+        message: `${state.user.username} liked your post!`,
+        user_username: target_username_and_content_id_array[0],
+        content_id: target_username_and_content_id_array[1],
+      };
+
+      axios
+        .post("http://0.0.0.0:8000/api/notifications/", like_data, config)
+        .then((response) => response.data)
+        .then((data) => {
+          console.log(data);
+        });
+    },
+
+    SET_COMMENT_NOTIFICATION(state, target_username_and_content_id_array) {
+      const config = {
+        headers: {
+          Authorization: `Token ${state.user.token}`,
+        },
+      };
+
+      const comment_data = {
+        of_type: "commented",
+        message: `${state.user.username} commented your post!`,
+        user_username: target_username_and_content_id_array[0],
+        content_id: target_username_and_content_id_array[1],
+      };
+
+      axios
+        .post("http://0.0.0.0:8000/api/notifications/", comment_data, config)
+        .then((response) => response.data)
+        .then((data) => {
+          console.log(data);
         });
     },
 
@@ -301,6 +366,10 @@ export default createStore({
       commit("UNSET_OTHER");
     },
 
+    setSingleContent({ commit }, content) {
+      commit("SET_SINGLE_CONTENT", content);
+    },
+
     setTimeline({ commit }, contents) {
       commit("SET_TIMELINE", contents);
     },
@@ -311,6 +380,14 @@ export default createStore({
 
     setNotifications({ commit }) {
       commit("SET_NOTIFICATIONS");
+    },
+
+    setLikeNotification({ commit }, target_username_and_content_id_array) {
+      commit("SET_LIKE_NOTIFICATION", target_username_and_content_id_array);
+    },
+
+    setCommentNotification({ commit }, target_username_and_content_id_array) {
+      commit("SET_COMMENT_NOTIFICATION", target_username_and_content_id_array);
     },
 
     setNotificationSeen({ commit }, notification_id) {

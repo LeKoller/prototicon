@@ -74,7 +74,13 @@
     <transition class="animate__animated animate__fadeInUp">
       <div class="timeline">
         <transition class="animate__animated animate__bounceIn">
-          <ContentCard />
+          <div>
+            <ContentCard
+              v-for="content in timeline"
+              :key="content.id"
+              :content="content"
+            />
+          </div>
         </transition>
       </div>
     </transition>
@@ -105,6 +111,7 @@ export default {
 
       return output;
     });
+    const timeline = computed(() => store.state.timeline);
 
     const isThisMyProfile = computed(
       () => store.state.other.username === store.state.user.username
@@ -183,6 +190,7 @@ export default {
     return {
       store,
       isFollowing,
+      timeline,
       isThisMyProfile,
       followers,
       following,

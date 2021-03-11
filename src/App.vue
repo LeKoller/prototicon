@@ -23,7 +23,7 @@
     <router-link class="link" to="/about">About</router-link>
     <div v-if="isLogged" class="notifications_case">
       <a href="#" @click="openNotificationModal" class="link"
-        ><span class="material-icons">
+        ><span class="material-icons notifications_icon">
           announcement
         </span></a
       ><span class="unseen_count" v-if="unseenNotificationsCount !== 0"
@@ -89,8 +89,17 @@ export default {
 <style lang="scss">
 .notifications_case {
   position: absolute;
-  left: 380px;
-  bottom: 18px;
+  right: 220px;
+  bottom: 0.8rem;
+
+  .notifications_icon {
+    color: #687785;
+    transition: all 0.25s ease;
+
+    &:hover {
+      color: #b08cfa;
+    }
+  }
 
   .unseen_count {
     position: relative;

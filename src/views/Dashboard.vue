@@ -59,10 +59,6 @@
                 store.state.user.friends.length
               }}</span>
             </h4>
-            <!-- <FsGrid
-              v-if="state.showFriends"
-              :usersList="store.state.user.friends"
-            /> -->
           </div>
         </div>
 
@@ -104,7 +100,13 @@
     <transition class="animate__animated animate__fadeInUp">
       <div class="timeline">
         <transition class="animate__animated animate__bounceIn">
-          <ContentCard />
+          <div>
+            <ContentCard
+              v-for="content in timeline"
+              :key="content.id"
+              :content="content"
+            />
+          </div>
         </transition>
       </div>
     </transition>
@@ -118,7 +120,6 @@ import { onBeforeMount, onMounted, reactive, ref, computed } from "vue";
 import axios from "axios";
 import ContentCard from "../components/ContentCard";
 import CreationArea from "../components/CreationArea";
-// import FsGrid from "../components/FsGrid";
 import GenericModal from "../components/GenericModal";
 import router from "../router";
 
@@ -127,7 +128,6 @@ export default {
   components: {
     CreationArea,
     ContentCard,
-    // FsGrid,
     GenericModal,
   },
   setup() {
@@ -144,6 +144,7 @@ export default {
     });
 
     const wallpaper = computed(() => store.state.user.wallpaper);
+    const timeline = computed(() => store.state.timeline);
 
     const asideResetIndex = ref(0);
 
@@ -300,6 +301,7 @@ export default {
       reactive,
       state,
       wallpaper,
+      timeline,
       asideResetIndex,
       switchUploadAvatar,
       switchUploadWallpaper,

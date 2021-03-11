@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
+import { reactive, computed } from "@vue/reactivity";
 import axios from "axios";
 import { onBeforeMount } from "@vue/runtime-core";
 import store from "../store";
@@ -45,9 +45,12 @@ import store from "../store";
 export default {
   name: "CommentsBox",
   props: {
-    content_id: Number,
+    content: Object,
   },
   setup(props) {
+    const content_author = computed(() => props.content.author_username);
+    const content_id = computed(() => props.content.id);
+
     const state = reactive({
       comments: [],
       text: "",
@@ -62,7 +65,7 @@ export default {
 
     async function getComments() {
       const comments = await axios
-        .get(`http://0.0.0.0:8000/api/comments/${props.content_id}/`, config)
+        .get(`http://0.0.0.0:8000/api/comments/${content_id.value}/`, config)
         .then((response) => response.data)
         .then((data) => data.comments);
 
@@ -76,7 +79,7 @@ export default {
             "http://0.0.0.0:8000/api/comments/",
             {
               text: state.text,
-              content_id: props.content_id,
+              content_id: content_id.value,
             },
             config
           )
@@ -86,6 +89,13 @@ export default {
           });
 
         state.text = "";
+      }
+
+      if (content_author.value !== store.state.user.username) {
+        store.dispatch("setCommentNotification", [
+          content_author.value,
+          content_id.value,
+        ]);
       }
     }
 
@@ -113,7 +123,7 @@ export default {
     }
 
     onBeforeMount(() => {
-      getComments(props.content_id);
+      getComments(content_id.value);
     });
 
     return {

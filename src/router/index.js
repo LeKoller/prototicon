@@ -29,6 +29,14 @@ const routes = [
     },
   },
   {
+    path: "/content",
+    name: "SingleContent",
+    component: () => import("../views/SingleContent.vue"),
+    meta: {
+      requiresAuth: true,
+    },
+  },
+  {
     path: "/about",
     name: "About",
     component: () => import("../views/About.vue"),

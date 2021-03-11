@@ -1,53 +1,56 @@
 <template>
-  <div
-    class="card"
-    v-for="content in timeline"
-    :key="content.id"
-    :content="content"
-  >
-    <div v-if="content.title !== ''">
+  <div class="card">
+    <div v-if="props.content.title !== ''">
       <div class="header">
         <div class="author_case">
           <h4>
             author:
-            <a @click="loadOtherUser(content.author_username)">{{
-              content.author_username
+            <a @click="loadOtherUser(props.content.author_username)">{{
+              props.content.author_username
             }}</a>
           </h4>
         </div>
-        <h3 class="title">{{ content.title }}</h3>
+        <h3 class="title">{{ props.content.title }}</h3>
       </div>
       <div class="main_content">
         <img
-          v-if="content.image !== null"
+          v-if="props.content.image !== null"
           class="content_image"
-          :src="`http://0.0.0.0:8000${content.image}/`"
+          :src="`http://0.0.0.0:8000${props.content.image}/`"
         />
         <div class="text_content">
-          <p>{{ content.text }}</p>
-          <CommentsBox :content_id="content.id" />
+          <p>{{ props.content.text }}</p>
+          <CommentsBox :content="content" />
         </div>
       </div>
       <div class="like_or_edit_delete_butttons">
-        <div v-if="store.state.user.username === content.author_username">
-          <button class="delete_buttton" @click="deleteContent(content.id)">
+        <div v-if="store.state.user.username === props.content.author_username">
+          <button
+            class="delete_buttton"
+            @click="deleteContent(props.content.id)"
+          >
             <span class="material-icons">
               delete_outline
             </span>
           </button>
-          <button class="edit_button" @click="showEditionModal(content)">
+          <button class="edit_button" @click="showEditionModal(props.content)">
             edit
           </button>
         </div>
         <div class="not_your_post" v-else>
-          <button class="like_button" @click="likeContent(content.id)">
+          <button
+            class="like_button"
+            @click="
+              likeContent(props.content.author_username, props.content.id)
+            "
+          >
             <div>
               <span class="likes_count">{{
-                content.likes.length + state.realTimeLike
+                props.content.likes.length + state.realTimeLike
               }}</span>
               <span
                 class="material-icons heart_icon"
-                :class="{ liked: state.isLiked[content.id] }"
+                :class="{ liked: state.isLiked[props.content.id] }"
               >
                 favorite
               </span>
@@ -61,7 +64,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, computed } from "vue";
+import { onMounted, reactive } from "vue";
 import store from "../store";
 import CommentsBox from "./CommentsBox";
 import axios from "axios";
@@ -72,13 +75,14 @@ export default {
   components: {
     CommentsBox,
   },
-  setup() {
+  props: {
+    content: Object,
+  },
+  setup(props) {
     const state = reactive({
       isLiked: {},
       realTimeLike: 0,
     });
-
-    const timeline = computed(() => store.state.timeline);
 
     const config = {
       headers: {
@@ -129,7 +133,7 @@ export default {
         });
     }
 
-    async function likeContent(content_id) {
+    async function likeContent(target_username, content_id) {
       await axios
         .post(
           `http://0.0.0.0:8000/api/contents/like/${content_id}/`,
@@ -145,6 +149,8 @@ export default {
         state.realTimeLike = 0;
       } else {
         state.realTimeLike = 1;
+
+        store.dispatch("setLikeNotification", [target_username, content_id]);
       }
 
       state.isLiked[content_id] = !state.isLiked[content_id];
@@ -191,9 +197,9 @@ export default {
     });
 
     return {
+      props,
       store,
       state,
-      timeline,
       deleteContent,
       config,
       loadOtherUser,
