@@ -2,7 +2,7 @@
   <img
     v-if="wallpaper !== null"
     class="wallpaper"
-    :src="`http://0.0.0.0:8000${wallpaper}/`"
+    :src="`${wallpaper}`"
     alt="wallpaper"
   />
   <div class="container">
@@ -18,7 +18,7 @@
           />
           <img
             class="profile_picture"
-            :src="`http://0.0.0.0:8000${store.state.user.image}/`"
+            :src="`${store.state.user.image}`"
             alt="Profile pricture"
             v-else
             @click="switchUploadAvatar"
@@ -173,10 +173,10 @@ export default {
 
       for (let username of usernames) {
         await axios
-          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
           .then((response) => response.data)
           .then((data) => {
-            contents = [...contents, ...data.contents];
+            contents = [...contents, ...data.results];
           });
 
         store.dispatch("unsetTimeline");

@@ -49,12 +49,6 @@ export default {
   align-items: center;
   transition: opacity 0.3s ease;
 
-  /* .modal_wrapper {
-    width: 60%;
-    padding: 40px;
-    background-color: rgba($color: #fff, $alpha: 0.7);
-  } */
-
   .close_modal_button {
     font-family: "Fredoka One", cursive;
     font-weight: normal;

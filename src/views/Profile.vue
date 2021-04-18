@@ -2,7 +2,7 @@
   <img
     v-if="wallpaper !== null"
     class="wallpaper"
-    :src="`http://0.0.0.0:8000${wallpaper}/`"
+    :src="`${wallpaper}`"
     alt="wallpaper"
   />
   <div class="container">
@@ -17,7 +17,7 @@
           />
           <img
             class="profile_picture"
-            :src="`http://0.0.0.0:8000${store.state.other.image}/`"
+            :src="`${store.state.other.image}`"
             alt="Profile pricture"
             v-else
           />
@@ -159,11 +159,11 @@ export default {
     async function getOtherFeed() {
       const contents = await axios
         .get(
-          `http://0.0.0.0:8000/api/contents/${store.state.other.username}/`,
+          `http://0.0.0.0:8000/api/contents/?author=${store.state.other.username}`,
           config
         )
         .then((response) => response.data)
-        .then((data) => data.contents);
+        .then((data) => data.results);
 
       store.dispatch("unsetTimeline");
       store.dispatch("setTimeline", contents);

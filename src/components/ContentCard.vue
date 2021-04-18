@@ -16,7 +16,7 @@
         <img
           v-if="props.content.image !== null"
           class="content_image"
-          :src="`http://0.0.0.0:8000${props.content.image}/`"
+          :src="`${props.content.image}`"
         />
         <div class="text_content">
           <p>{{ props.content.text }}</p>
@@ -102,13 +102,13 @@ export default {
 
       for (let username of usernames) {
         await axios
-          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
           .then((response) => response.data)
           .then((data) => {
-            contents = [...contents, ...data.contents];
+            contents = [...contents, ...data.results];
           });
 
-        store.dispatch("unsetTimeline");
+        // store.dispatch("unsetTimeline");
         store.dispatch("setTimeline", contents);
       }
     }
@@ -171,10 +171,10 @@ export default {
       });
     }
 
-    function hideDeletedContent(content_id) {
-      store.dispatch("setContentTitleEmpty", content_id);
-      getTimeline();
-    }
+    // function hideDeletedContent(content_id) {
+    //   store.dispatch("setContentTitleEmpty", content_id);
+    //   getTimeline();
+    // }
 
     async function deleteContent(content_id) {
       await axios
@@ -182,7 +182,8 @@ export default {
         .then((response) => response.data)
         .then((data) => data);
 
-      hideDeletedContent(content_id);
+      // hideDeletedContent(content_id);
+      getTimeline();
     }
 
     function showEditionModal(content) {

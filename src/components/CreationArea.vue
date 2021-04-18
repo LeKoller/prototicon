@@ -111,10 +111,10 @@ export default {
 
       for (let username of usernames) {
         await axios
-          .get(`http://0.0.0.0:8000/api/contents/${username}/`, config)
+          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
           .then((response) => response.data)
           .then((data) => {
-            contents = [...contents, ...data.contents];
+            contents = [...contents, ...data.results];
           });
 
         store.dispatch("unsetTimeline");
@@ -179,11 +179,13 @@ export default {
 
     async function updateContent() {
       const fd = new FormData();
+      const contentId = store.state.creation.content.id;
 
+      console.log(config);
       if (store.state.creation.content.title.length > 0) {
         await axios
-          .put(
-            `http://0.0.0.0:8000/api/contents/${store.state.creation.content.id}/`,
+          .patch(
+            `http://0.0.0.0:8000/api/contents/${contentId}/`,
             makeRequestObject(),
             config
           )
@@ -259,7 +261,7 @@ export default {
       position: relative;
       font-size: 1.2rem;
       top: 0.1rem;
-      color: #b08cfa;
+      color: rgba($color: #000000, $alpha: 0.5);
     }
 
     color: #d3dce6;
