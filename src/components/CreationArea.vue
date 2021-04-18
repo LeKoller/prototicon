@@ -1,11 +1,6 @@
 <template>
   <div class="creation_area">
-    <h3>
-      hello {{ store.state.user.username }}!
-      <span id="coffe_icon" class="material-icons">
-        coffee
-      </span>
-    </h3>
+    <h3>hello {{ store.state.user.username }}!</h3>
     <form @submit.prevent="">
       <div class="title_and_buttons">
         <input
@@ -69,11 +64,14 @@
 
 <script>
 import store from "../store";
+import { computed } from "vue";
 import axios from "axios";
 
 export default {
   name: "CreationArea",
   setup() {
+    const getTimeline = computed(() => store.state.getTimelineHold);
+
     const config = {
       headers: {
         Authorization: `Token ${store.state.user.token}`,
@@ -97,29 +95,6 @@ export default {
 
     function enablePrivate() {
       store.dispatch("setPrivate");
-    }
-
-    function getFollowingUsernames() {
-      return store.state.user.following.map((user) => user.username);
-    }
-
-    async function getTimeline() {
-      const usernames = getFollowingUsernames();
-      let contents = [];
-
-      usernames.push(store.state.user.username);
-
-      for (let username of usernames) {
-        await axios
-          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
-          .then((response) => response.data)
-          .then((data) => {
-            contents = [...contents, ...data.results];
-          });
-
-        store.dispatch("unsetTimeline");
-        store.dispatch("setTimeline", contents);
-      }
     }
 
     function onContentFileSelected(event) {
@@ -174,14 +149,13 @@ export default {
           });
       }
       store.dispatch("unsetCreation");
-      getTimeline();
+      getTimeline.value();
     }
 
     async function updateContent() {
       const fd = new FormData();
       const contentId = store.state.creation.content.id;
 
-      console.log(config);
       if (store.state.creation.content.title.length > 0) {
         await axios
           .patch(
@@ -213,7 +187,7 @@ export default {
       }
       store.dispatch("unsetCreation");
       store.dispatch("setModalSwitchOff");
-      getTimeline();
+      getTimeline.value();
     }
 
     return {
@@ -261,7 +235,7 @@ export default {
       position: relative;
       font-size: 1.2rem;
       top: 0.1rem;
-      color: rgba($color: #000000, $alpha: 0.5);
+      color: rgba($color: #000000, $alpha: 0.4);
     }
 
     color: #d3dce6;

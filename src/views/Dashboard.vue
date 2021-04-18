@@ -94,7 +94,7 @@
     </transition>
 
     <transition class="animate__animated animate__fadeInRight">
-      <CreationArea />
+      <CreationArea :getTimeline="getTimeline" />
     </transition>
 
     <transition class="animate__animated animate__fadeInUp">
@@ -294,6 +294,7 @@ export default {
       loadUserFriends();
       store.dispatch("unsetOther");
       store.dispatch("setNotifications");
+      store.dispatch("setGetTimelineHold", getTimeline);
     });
 
     return {
@@ -314,7 +315,6 @@ export default {
       showFriendsGrid,
       ContentCard,
       CreationArea,
-      // FsGrid,
       GenericModal,
     };
   },

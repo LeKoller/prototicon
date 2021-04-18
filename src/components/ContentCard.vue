@@ -64,7 +64,7 @@
 </template>
 
 <script>
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, computed } from "vue";
 import store from "../store";
 import CommentsBox from "./CommentsBox";
 import axios from "axios";
@@ -84,34 +84,13 @@ export default {
       realTimeLike: 0,
     });
 
+    const getTimeline = computed(() => store.state.getTimelineHold);
+
     const config = {
       headers: {
         Authorization: `Token ${store.state.user.token}`,
       },
     };
-
-    function getFollowingUsernames() {
-      return store.state.user.following.map((user) => user.username);
-    }
-
-    async function getTimeline() {
-      const usernames = getFollowingUsernames();
-      let contents = [];
-
-      usernames.push(store.state.user.username);
-
-      for (let username of usernames) {
-        await axios
-          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
-          .then((response) => response.data)
-          .then((data) => {
-            contents = [...contents, ...data.results];
-          });
-
-        // store.dispatch("unsetTimeline");
-        store.dispatch("setTimeline", contents);
-      }
-    }
 
     async function loadOtherUser(username) {
       await axios
@@ -171,19 +150,13 @@ export default {
       });
     }
 
-    // function hideDeletedContent(content_id) {
-    //   store.dispatch("setContentTitleEmpty", content_id);
-    //   getTimeline();
-    // }
-
     async function deleteContent(content_id) {
       await axios
         .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
         .then((response) => response.data)
         .then((data) => data);
 
-      // hideDeletedContent(content_id);
-      getTimeline();
+      getTimeline.value();
     }
 
     function showEditionModal(content) {

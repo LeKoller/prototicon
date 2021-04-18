@@ -3,7 +3,7 @@
     <div class="modal_mask">
       <transition class="animate__animated animate__bounceIn">
         <div class="modal_content">
-          <CreationArea />
+          <CreationArea :getTimeline="sendTimeline" />
           <button class="close_modal_button" @click="closeModal">
             never mind...
           </button>

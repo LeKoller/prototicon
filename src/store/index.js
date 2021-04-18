@@ -43,6 +43,7 @@ export default createStore({
       author_username: "",
       likes: [],
     },
+    getTimelineHold: () => {},
     timeline: [],
     notifications: [],
     modalSwitch: false,
@@ -323,6 +324,10 @@ export default createStore({
         },
       };
     },
+
+    SET_GET_TIMELINE_HOLD(state, getTimeline) {
+      state.getTimelineHold = getTimeline;
+    },
   },
 
   actions: {
@@ -448,6 +453,10 @@ export default createStore({
 
     unsetCreation({ commit }) {
       commit("UNSET_CREATION");
+    },
+
+    setGetTimelineHold({ commit }, getTimeline) {
+      commit("SET_GET_TIMELINE_HOLD", getTimeline);
     },
   },
 
