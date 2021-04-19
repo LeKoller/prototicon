@@ -49,6 +49,7 @@ export default createStore({
     modalSwitch: false,
     genericModalSwitch: false,
     notificationsModalSwitch: false,
+    messagesModalSwitch: false,
     creation: {
       uploadText: false,
       uploadImage: false,
@@ -60,6 +61,7 @@ export default createStore({
         is_private: false,
       },
     },
+    chats: {},
   },
 
   mutations: {
@@ -270,6 +272,7 @@ export default createStore({
       state.modalSwitch = false;
       state.genericModalSwitch = false;
       state.notificationsModalSwitch = false;
+      state.messagesModalSwitch = false;
     },
 
     SET_GENERIC_MODAL_SWITCH(state) {
@@ -278,6 +281,10 @@ export default createStore({
 
     SET_NOTIFICATIONS_MODAL_SWITCH(state) {
       state.notificationsModalSwitch = !state.notificationsModalSwitch;
+    },
+
+    SET_MESSAGES_MODAL_SWITCH(state) {
+      state.messagesModalSwitch = !state.messagesModalSwitch;
     },
 
     SET_MODAL_SWITCH_OFF(state) {
@@ -421,6 +428,10 @@ export default createStore({
 
     setNotificationsModalSwitch({ commit }) {
       commit("SET_NOTIFICATIONS_MODAL_SWITCH");
+    },
+
+    setMessagesModalSwitch({ commit }) {
+      commit("SET_MESSAGES_MODAL_SWITCH");
     },
 
     setModalSwitchOff({ commit }) {

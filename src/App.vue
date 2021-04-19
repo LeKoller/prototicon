@@ -22,13 +22,21 @@
     </div>
     <router-link class="link" to="/about">About</router-link>
     <div v-if="isLogged" class="notifications_case">
-      <a href="#" @click="openNotificationModal" class="link"
-        ><span class="material-icons notifications_icon">
+      <a href="#" @click="openNotificationModal" class="link">
+        <span class="material-icons notifications_icon">
           announcement
-        </span></a
-      ><span class="unseen_count" v-if="unseenNotificationsCount !== 0"
-        >{{ unseenNotificationsCount }}
+        </span>
+      </a>
+      <span class="unseen_count" v-if="unseenNotificationsCount !== 0">
+        {{ unseenNotificationsCount }}
       </span>
+    </div>
+    <div v-if="isLogged" class="messages_case">
+      <a href="#" @click="openMessageModal" class="link">
+        <span class="material-icons messages_icon">
+          forum
+        </span>
+      </a>
     </div>
   </div>
   <router-view />
@@ -37,6 +45,7 @@
     type="NotificationsBox"
     v-if="store.state.notificationsModalSwitch"
   />
+  <GenericModal type="MessagesBox" v-if="store.state.messagesModalSwitch" />
 </template>
 
 <script>
@@ -74,6 +83,10 @@ export default {
       store.dispatch("setNotificationsModalSwitch");
     }
 
+    function openMessageModal() {
+      store.dispatch("setMessagesModalSwitch");
+    }
+
     return {
       computed,
       store,
@@ -81,18 +94,21 @@ export default {
       unseenNotificationsCount,
       performLogout,
       openNotificationModal,
+      openMessageModal,
     };
   },
 };
 </script>
 
 <style lang="scss">
-.notifications_case {
+.notifications_case,
+.messages_case {
   position: absolute;
   right: 220px;
   bottom: 0.8rem;
 
-  .notifications_icon {
+  .notifications_icon,
+  .messages_icon {
     color: #687785;
     transition: all 0.25s ease;
 
@@ -107,6 +123,10 @@ export default {
     bottom: 8px;
     color: #b08cfa;
   }
+}
+
+.messages_case {
+  right: 270px;
 }
 
 #logout_and_title {

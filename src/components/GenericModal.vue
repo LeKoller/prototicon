@@ -9,6 +9,9 @@
           <div v-else-if="props.type === 'NotificationsBox'">
             <NotificationsBox />
           </div>
+          <div v-else-if="props.type === 'MessagesBox'">
+            <MessagesBox />
+          </div>
           <button class="close_modal_button" @click="closeModal">
             <span class="material-icons">
               clear
@@ -24,12 +27,14 @@
 import store from "../store";
 import FsGrid from "./FsGrid";
 import NotificationsBox from "./NotificationsBox";
+import MessagesBox from "./MessagesBox";
 
 export default {
   name: "Modal",
   components: {
     FsGrid,
     NotificationsBox,
+    MessagesBox,
   },
   props: {
     type: String,
@@ -69,6 +74,7 @@ export default {
     padding-top: 20px;
     background-color: rgba($color: #fff, $alpha: 0.7);
     position: relative;
+    top: 5vh;
 
     .close_modal_button {
       position: absolute;

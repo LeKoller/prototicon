@@ -74,6 +74,8 @@ export default {
             liked_content: data.user.liked_content,
             friends: data.friends,
             token: data.token,
+            // image: data.user.image,
+            // wallpaper: data.user.wallpaper,
           });
 
           router.push("/dashboard");

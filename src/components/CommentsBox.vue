@@ -152,14 +152,13 @@ export default {
     .comment_author {
       margin: 0;
       margin-right: 8px;
-      margin-bottom: 2px;
+      margin-top: 2px;
       height: fit-content;
     }
 
     .comment_text {
       margin: 0;
       position: relative;
-      bottom: 2px;
     }
 
     .delete_button {

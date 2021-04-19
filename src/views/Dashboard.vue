@@ -33,7 +33,7 @@
 
 <script>
 import store from "../store";
-import { onBeforeMount, onMounted, computed } from "vue";
+import { onBeforeMount, onMounted, computed, ref } from "vue";
 import axios from "axios";
 import ContentCard from "../components/ContentCard";
 import CreationArea from "../components/CreationArea";
@@ -51,6 +51,8 @@ export default {
   setup() {
     const wallpaper = computed(() => store.state.user.wallpaper);
     const timeline = computed(() => store.state.timeline);
+
+    const ws = ref({});
 
     const config = {
       headers: {
@@ -82,6 +84,22 @@ export default {
     }
 
     onBeforeMount(getTimeline);
+
+    onBeforeMount(() => {
+      ws.value.current = new WebSocket("ws://0.0.0.0:8000/ws/messages/");
+      ws.value.current.onopen = () => console.log("ws openned");
+      ws.value.current.onclose = () => console.log("ws closed");
+
+      ws.value.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        console.log(data);
+      };
+
+      return () => {
+        ws.value.current.close();
+      };
+    });
+
     onMounted(() => {
       store.dispatch("unsetOther");
       store.dispatch("setNotifications");
