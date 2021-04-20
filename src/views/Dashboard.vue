@@ -83,16 +83,37 @@ export default {
       }
     }
 
-    onBeforeMount(getTimeline);
+    function getMessagesOnCache() {
+      try {
+        for (let friend of store.state.user.friends) {
+          axios.get(
+            `http://0.0.0.0:8000/api/messages/?username=${friend.username}`,
+            config
+          );
+        }
+      } catch {
+        console.log("ok");
+      }
+    }
 
-    onBeforeMount(() => {
-      ws.value.current = new WebSocket("ws://0.0.0.0:8000/ws/messages/");
+    onBeforeMount(getTimeline);
+    onBeforeMount(getMessagesOnCache);
+
+    onMounted(() => {
+      ws.value.current = new WebSocket(
+        `ws://0.0.0.0:8000/ws/messages/?token=${store.state.user.token}`
+      );
+      ws.value.current.headers = config.headers;
       ws.value.current.onopen = () => console.log("ws openned");
       ws.value.current.onclose = () => console.log("ws closed");
 
-      ws.value.onmessage = (event) => {
+      ws.value.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
         console.log(data);
+
+        if (data.messages) {
+          store.dispatch("setChats", data.messages);
+        }
       };
 
       return () => {

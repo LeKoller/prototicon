@@ -1,13 +1,61 @@
 <template>
   <div class="container">
     <div class="chat_selection_case">
-      <h3>chats go here</h3>
+      <img
+        class="user_avatar_miniature"
+        v-for="friend in friends"
+        :key="friend.id"
+        :src="`http://0.0.0.0:8000${friend.image}/`"
+        :alt="`${friend.username}`"
+        @click="openFriendsChat(friend.username)"
+      />
     </div>
-    <div class="chat_case"></div>
+    <ChatCase />
   </div>
 </template>
 
-<style lang="scss" scoped>
+<script>
+import { computed, onBeforeMount } from "vue";
+import store from "../store";
+import ChatCase from "./ChatCase";
+
+export default {
+  name: "MessagesBox",
+  components: {
+    ChatCase,
+  },
+  setup() {
+    const chats = computed(() => store.state.chats);
+    const friends = computed(() =>
+      store.state.user.friends.filter((friend) => {
+        return friend.image;
+      })
+    );
+
+    function openFriendsChat(friendUsername) {
+      store.dispatch("setSelectedChat", chats.value[friendUsername]);
+      console.log(store.state.selectedChat.results);
+    }
+
+    onBeforeMount(() => {
+      friends.value.forEach((friend) => {
+        if (!friend.image) {
+          store.dispatch("setFriendDefaultAvatar", friend.username);
+        }
+      });
+    });
+
+    return {
+      chats,
+      friends,
+      openFriendsChat,
+      ChatCase,
+    };
+  },
+};
+</script>
+
+<style lang="scss">
 .container {
   display: flex;
   flex-direction: column;
@@ -15,12 +63,17 @@
 
   .chat_selection_case {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    justify-content: flex-start;
     width: 100%;
-    background-color: lightslategray;
-
     margin-bottom: 20px;
+
+    .user_avatar_miniature {
+      width: 4vw;
+      cursor: pointer;
+      margin-right: 8px;
+      border-radius: 4px;
+    }
   }
 
   .chat_case {
@@ -48,7 +101,7 @@
       background: #093156;
     }
 
-    .comment_case {
+    .message_case {
       position: relative;
       display: flex;
       background-color: rgb(28, 32, 37);
@@ -58,14 +111,14 @@
       margin-bottom: 4px;
       flex-wrap: wrap;
 
-      .comment_author {
+      /* .comment_author {
         margin: 0;
         margin-right: 8px;
         margin-top: 2px;
         height: fit-content;
-      }
+      } */
 
-      .comment_text {
+      .message_text {
         margin: 0;
         position: relative;
       }

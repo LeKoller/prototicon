@@ -62,6 +62,7 @@ export default createStore({
       },
     },
     chats: {},
+    selectedChat: {},
   },
 
   mutations: {
@@ -335,6 +336,15 @@ export default createStore({
     SET_GET_TIMELINE_HOLD(state, getTimeline) {
       state.getTimelineHold = getTimeline;
     },
+
+    SET_CHATS(state, chats_messages) {
+      state.chats = chats_messages;
+    },
+
+    SET_SELECTED_CHAT(state, selected_chat) {
+      console.log(selected_chat);
+      state.selectedChat = selected_chat;
+    },
   },
 
   actions: {
@@ -468,6 +478,14 @@ export default createStore({
 
     setGetTimelineHold({ commit }, getTimeline) {
       commit("SET_GET_TIMELINE_HOLD", getTimeline);
+    },
+
+    setChats({ commit }, chatsMessages) {
+      commit("SET_CHATS", chatsMessages);
+    },
+
+    setSelectedChat({ commit }, selectedChat) {
+      commit("SET_SELECTED_CHAT", selectedChat);
     },
   },
 
