@@ -109,10 +109,13 @@ export default {
 
       ws.value.current.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log(data);
 
         if (data.messages) {
           store.dispatch("setChats", data.messages);
+        }
+        if (data.message) {
+          console.log(data.message);
+          store.dispatch("setNewMessage", data.message);
         }
       };
 

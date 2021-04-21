@@ -34,15 +34,11 @@ export default {
 
     function openFriendsChat(friendUsername) {
       store.dispatch("setSelectedChat", chats.value[friendUsername]);
-      console.log(store.state.selectedChat.results);
+      store.dispatch("setCurrentChatFriend", friendUsername);
     }
 
     onBeforeMount(() => {
-      friends.value.forEach((friend) => {
-        if (!friend.image) {
-          store.dispatch("setFriendDefaultAvatar", friend.username);
-        }
-      });
+      store.dispatch("setSelectedChat", {});
     });
 
     return {
@@ -79,74 +75,13 @@ export default {
   .chat_case {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end;
     width: 100%;
     height: 64vh;
     background-color: rgb(47, 54, 61);
     overflow: auto;
-
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: rgb(47, 54, 61);
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background: rgb(33, 39, 44);
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background: #093156;
-    }
-
-    .message_case {
-      position: relative;
-      display: flex;
-      background-color: rgb(28, 32, 37);
-      border-radius: 8px;
-      padding: 8px;
-      padding-right: 30px;
-      margin-bottom: 4px;
-      flex-wrap: wrap;
-
-      /* .comment_author {
-        margin: 0;
-        margin-right: 8px;
-        margin-top: 2px;
-        height: fit-content;
-      } */
-
-      .message_text {
-        margin: 0;
-        position: relative;
-      }
-
-      .delete_button {
-        position: absolute;
-        right: 4px;
-        top: 6px;
-        outline: none;
-        border: none;
-        padding: 0;
-        background-color: transparent;
-        color: slategray;
-        opacity: 0;
-        cursor: pointer;
-        transition: all 0.25s ease;
-
-        &:hover {
-          opacity: 1;
-        }
-      }
-
-      .error_message {
-        font-size: 0.6rem;
-        color: #ff817e;
-        width: 100%;
-      }
-    }
+    box-sizing: border-box;
+    position: relative;
   }
 
   .field_and_button {

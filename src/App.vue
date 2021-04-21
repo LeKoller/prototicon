@@ -194,4 +194,20 @@ export default {
 #nav a.router-link-exact-active {
   color: #4bb6ff;
 }
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgb(47, 54, 61);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgb(33, 39, 44);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #093156;
+}
 </style>

@@ -95,6 +95,10 @@ export default {
 #logo {
   margin: 2rem;
   z-index: 0;
+  width: fit-content;
+  margin: auto;
+  position: relative;
+  bottom: 5vh;
 }
 
 h1,

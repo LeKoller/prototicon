@@ -63,6 +63,7 @@ export default createStore({
     },
     chats: {},
     selectedChat: {},
+    currentChatFriend: "",
   },
 
   mutations: {
@@ -342,8 +343,22 @@ export default createStore({
     },
 
     SET_SELECTED_CHAT(state, selected_chat) {
-      console.log(selected_chat);
       state.selectedChat = selected_chat;
+    },
+
+    SET_CURRENT_CHAT_FRIEND(state, friend_username) {
+      state.currentChatFriend = friend_username;
+    },
+
+    SET_NEW_MESSAGE(state, new_message) {
+      const author = new_message.author_username;
+      const target = new_message.target_username;
+
+      if (state.chats[target]) {
+        state.chats[target].results.push(new_message);
+      } else if (state.chats[author]) {
+        state.chats[author].results.push(new_message);
+      }
     },
   },
 
@@ -486,6 +501,14 @@ export default createStore({
 
     setSelectedChat({ commit }, selectedChat) {
       commit("SET_SELECTED_CHAT", selectedChat);
+    },
+
+    setCurrentChatFriend({ commit }, friendUsername) {
+      commit("SET_CURRENT_CHAT_FRIEND", friendUsername);
+    },
+
+    setNewMessage({ commit }, newMessage) {
+      commit("SET_NEW_MESSAGE", newMessage);
     },
   },
 
