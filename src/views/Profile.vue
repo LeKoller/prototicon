@@ -129,7 +129,7 @@ export default {
     async function follow() {
       await axios
         .post(
-          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/follow/${store.state.other.username}/`,
+          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/follow/${store.state.other.username}/`,
           {},
           config
         )
@@ -144,7 +144,7 @@ export default {
     function loadOtherWallpaper() {
       axios
         .get(
-          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
+          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
         )
         .then((response) => response.data)
         .then((data) => {
@@ -161,7 +161,7 @@ export default {
     async function getOtherFeed() {
       const contents = await axios
         .get(
-          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/?author=${store.state.other.username}`,
+          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/contents/?author=${store.state.other.username}`,
           config
         )
         .then((response) => response.data)
@@ -174,7 +174,7 @@ export default {
     async function updateOther() {
       const other = await axios
         .get(
-          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${store.state.other.username}/`,
+          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.other.username}/`,
           config
         )
         .then((response) => response.data)

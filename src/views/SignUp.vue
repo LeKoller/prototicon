@@ -107,7 +107,7 @@ export default {
       if (enableButton.value) {
         axios
           .post(
-            "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/",
+            "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/",
             state.signInObject
           )
           .then((response) => console.log(response.status));
