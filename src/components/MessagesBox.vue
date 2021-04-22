@@ -5,7 +5,9 @@
         class="user_avatar_miniature"
         v-for="friend in friends"
         :key="friend.id"
-        :src="`http://0.0.0.0:8000${friend.image}/`"
+        :src="
+          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com${friend.image}/`
+        "
         :alt="`${friend.username}`"
         @click="openFriendsChat(friend.username)"
       />
@@ -35,10 +37,13 @@ export default {
     function openFriendsChat(friendUsername) {
       store.dispatch("setSelectedChat", chats.value[friendUsername]);
       store.dispatch("setCurrentChatFriend", friendUsername);
+      store.dispatch("setSendBox", true);
     }
 
     onBeforeMount(() => {
       store.dispatch("setSelectedChat", {});
+      store.dispatch("setCurrentChatFriend", "");
+      store.dispatch("setSendBox", false);
     });
 
     return {

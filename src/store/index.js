@@ -64,6 +64,7 @@ export default createStore({
     chats: {},
     selectedChat: {},
     currentChatFriend: "",
+    sendBox: false,
   },
 
   mutations: {
@@ -371,6 +372,10 @@ export default createStore({
         state.chats[author].results.push(new_message);
       }
     },
+
+    SET_SEND_BOX(state, boolean) {
+      state.sendBox = boolean;
+    },
   },
 
   actions: {
@@ -520,6 +525,10 @@ export default createStore({
 
     setNewMessage({ commit }, newMessage) {
       commit("SET_NEW_MESSAGE", newMessage);
+    },
+
+    setSendBox({ commit }, boolean) {
+      commit("SET_SEND_BOX", boolean);
     },
   },
 

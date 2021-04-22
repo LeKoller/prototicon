@@ -12,12 +12,14 @@
     </div>
     <div class="send_box_case">
       <textarea
+        id="send_box"
         class="send_box"
         name="send_box"
         rows="1"
         v-model="state.message"
+        @click="check"
       ></textarea>
-      <button class="send_button" @click="sendMessage">
+      <button class="send_button" @submit.prevent="sendMessage">
         <span class="material-icons" id="send_icon">
           send
         </span>
@@ -49,6 +51,7 @@ export default {
 
     const user = computed(() => store.state.user.username);
     const friendUsername = computed(() => store.state.currentChatFriend);
+    const isChatSelected = computed(() => store.state.sendBox);
 
     const state = reactive({
       message: "",
@@ -79,12 +82,33 @@ export default {
       }
     }
 
+    // onMounted(() => {
+    //   if (friendUsername.value === "") {
+    //     console.log("oi");
+    //     const textarea = document.getElementById("send_box");
+    //     textarea.disabled = true;
+    //   }
+    // });
+
+    function check() {
+      if (!isChatSelected.value) {
+        const sendBox = document.getElementById("send_box");
+        console.log(sendBox);
+        sendBox.disabled = true;
+      }
+
+      const sendBox = document.getElementById("send_box");
+      sendBox.disabled = false;
+    }
+
     return {
       chat,
       user,
       state,
       isYourMessage,
       sendMessage,
+      isChatSelected,
+      check,
     };
   },
 };
@@ -187,12 +211,6 @@ export default {
     &:hover {
       opacity: 1;
     }
-  }
-
-  .error_message {
-    font-size: 0.6rem;
-    color: #ff817e;
-    width: 100%;
   }
 }
 

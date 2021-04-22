@@ -4,7 +4,9 @@
       class="user_avatar_miniature"
       v-for="user in store.state.user.followers"
       :key="user.id"
-      :src="`http://0.0.0.0:8000${user.image}/`"
+      :src="
+        `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com${user.image}/`
+      "
       :alt="`${user.username}`"
       @click="goToUsersProfile(user.username)"
     />

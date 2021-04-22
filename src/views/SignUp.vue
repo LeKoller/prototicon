@@ -8,8 +8,10 @@
             <input
               type="text"
               name="firstName"
+              id="first"
               placeholder="first name"
               v-model="state.signInObject.first_name"
+              autofocus
             />
             <input
               type="text"
@@ -51,6 +53,12 @@
                 Sign up
               </button>
             </div>
+            <div v-if="state.signUpFailed">
+              <span class="error_message">
+                Sign up failed. Please try again later or change your
+                credencials.
+              </span>
+            </div>
           </form>
         </div>
       </div>
@@ -75,6 +83,7 @@ export default {
         email: "",
       },
       confirmPassword: "",
+      signUpFailed: false,
     });
 
     const passwordChecked = computed(
@@ -110,10 +119,14 @@ export default {
             "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/",
             state.signInObject
           )
-          .then((response) => console.log(response.status));
+          .then((response) => {
+            console.log(response.status);
+            router.push("/");
+          })
+          .catch(() => {
+            state.signUpFailed = true;
+          });
       }
-
-      router.push("/");
     }
 
     return {
@@ -129,6 +142,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.error_message {
+  font-size: 0.8rem;
+  color: #ff817e;
+  width: 100%;
+}
+
 h2 {
   font-family: "Fredoka One", cursive;
   font-size: 3rem;
