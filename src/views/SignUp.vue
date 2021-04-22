@@ -106,7 +106,10 @@ export default {
     function performSignUp() {
       if (enableButton.value) {
         axios
-          .post("http://0.0.0.0:8000/api/accounts/", state.signInObject)
+          .post(
+            "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/",
+            state.signInObject
+          )
           .then((response) => console.log(response.status));
       }
 

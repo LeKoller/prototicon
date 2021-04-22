@@ -184,7 +184,10 @@ export default createStore({
       };
 
       axios
-        .get("http://0.0.0.0:8000/api/notifications/", config)
+        .get(
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/notifications/",
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           state.notifications = data.notifications;
@@ -206,7 +209,11 @@ export default createStore({
       };
 
       axios
-        .post("http://0.0.0.0:8000/api/notifications/", like_data, config)
+        .post(
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/notifications/",
+          like_data,
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           console.log(data);
@@ -228,7 +235,11 @@ export default createStore({
       };
 
       axios
-        .post("http://0.0.0.0:8000/api/notifications/", comment_data, config)
+        .post(
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/notifications/",
+          comment_data,
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           console.log(data);
@@ -244,7 +255,7 @@ export default createStore({
 
       axios
         .put(
-          `http://0.0.0.0:8000/api/notifications/${notification_id}/`,
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/notifications/${notification_id}/`,
           {},
           config
         )

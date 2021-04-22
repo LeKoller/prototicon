@@ -94,7 +94,10 @@ export default {
 
     async function loadOtherUser(username) {
       await axios
-        .get(`http://0.0.0.0:8000/api/accounts/${username}/`, config)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${username}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setOther", data);
@@ -105,7 +108,9 @@ export default {
 
     function updateUserLikes() {
       axios
-        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
+        )
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUserLikes", data.liked_content);
@@ -115,7 +120,7 @@ export default {
     async function likeContent(target_username, content_id) {
       await axios
         .post(
-          `http://0.0.0.0:8000/api/contents/like/${content_id}/`,
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/like/${content_id}/`,
           {},
           config
         )
@@ -152,7 +157,10 @@ export default {
 
     async function deleteContent(content_id) {
       await axios
-        .delete(`http://0.0.0.0:8000/api/contents/${content_id}/`, config)
+        .delete(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/${content_id}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => data);
 

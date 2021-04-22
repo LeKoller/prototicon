@@ -61,7 +61,10 @@ export default {
 
     function performLogin() {
       axios
-        .post("http://0.0.0.0:8000/api/login/", state.user)
+        .post(
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/login/",
+          state.user
+        )
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUser", {

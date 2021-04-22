@@ -122,7 +122,7 @@ export default {
       if (store.state.creation.content.title.length > 0) {
         await axios
           .post(
-            "http://0.0.0.0:8000/api/contents/",
+            "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/",
             makeRequestObject(),
             config
           )
@@ -137,7 +137,7 @@ export default {
               fd.append("content_id", data.id);
               axios
                 .post(
-                  "http://0.0.0.0:8000/api/contents/image/",
+                  "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/image/",
                   fd,
                   imageConfig
                 )
@@ -159,7 +159,7 @@ export default {
       if (store.state.creation.content.title.length > 0) {
         await axios
           .patch(
-            `http://0.0.0.0:8000/api/contents/${contentId}/`,
+            `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/${contentId}/`,
             makeRequestObject(),
             config
           )
@@ -174,7 +174,7 @@ export default {
               fd.append("content_id", data.id);
               axios
                 .post(
-                  "http://0.0.0.0:8000/api/contents/image/",
+                  "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/image/",
                   fd,
                   imageConfig
                 )

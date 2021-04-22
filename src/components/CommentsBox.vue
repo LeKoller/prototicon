@@ -65,7 +65,10 @@ export default {
 
     async function getComments() {
       const comments = await axios
-        .get(`http://0.0.0.0:8000/api/comments/${content_id.value}/`, config)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/comments/${content_id.value}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => data.comments);
 
@@ -76,7 +79,7 @@ export default {
       if (state.text !== "") {
         await axios
           .post(
-            "http://0.0.0.0:8000/api/comments/",
+            "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/comments/",
             {
               text: state.text,
               content_id: content_id.value,
@@ -102,7 +105,7 @@ export default {
     async function deleteComment(comment) {
       await axios
         .delete(
-          `http://0.0.0.0:8000/api/comments/delete/${comment.id}/`,
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/comments/delete/${comment.id}/`,
           config
         )
         .then((response) => response.data)

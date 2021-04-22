@@ -30,7 +30,10 @@ export default {
 
     async function goToUsersProfile(username) {
       const other = await axios
-        .get(`http://0.0.0.0:8000/api/accounts/${username}/`, config)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${username}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => data);
 

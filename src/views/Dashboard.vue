@@ -72,7 +72,10 @@ export default {
 
       for (let username of usernames) {
         await axios
-          .get(`http://0.0.0.0:8000/api/contents/?author=${username}`, config)
+          .get(
+            `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/?author=${username}`,
+            config
+          )
           .then((response) => response.data)
           .then((data) => {
             contents = [...contents, ...data.results];
@@ -87,7 +90,7 @@ export default {
       try {
         for (let friend of store.state.user.friends) {
           axios.get(
-            `http://0.0.0.0:8000/api/messages/?username=${friend.username}`,
+            `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/messages/?username=${friend.username}`,
             config
           );
         }
@@ -101,7 +104,7 @@ export default {
 
     onMounted(() => {
       ws.value.current = new WebSocket(
-        `ws://0.0.0.0:8000/ws/messages/?token=${store.state.user.token}`
+        `ws://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/ws/messages/?token=${store.state.user.token}`
       );
       ws.value.current.headers = config.headers;
       ws.value.current.onopen = () => console.log("ws openned");

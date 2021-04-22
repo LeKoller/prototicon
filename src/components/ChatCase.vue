@@ -67,7 +67,7 @@ export default {
     async function sendMessage() {
       if (state.message) {
         await axios.post(
-          "http://0.0.0.0:8000/api/messages/",
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/messages/",
           {
             target_username: friendUsername.value,
             text: state.message,

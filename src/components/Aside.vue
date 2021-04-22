@@ -108,7 +108,11 @@ export default {
         fd.append("image", state.wallpaperFile, state.wallpaperFile.name);
 
         await axios
-          .post("http://0.0.0.0:8000/api/accounts/wallpaper/", fd, imageConfig)
+          .post(
+            "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/wallpaper/",
+            fd,
+            imageConfig
+          )
           .then((response) => response.data)
           .then((data) => {
             console.log(data);
@@ -126,7 +130,9 @@ export default {
 
     function loadUserWallpaper() {
       axios
-        .get(`http://0.0.0.0:8000/api/accounts/${store.state.user.username}/`)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
+        )
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUserWallpaper", data.wallpaper);
@@ -135,7 +141,10 @@ export default {
 
     async function loadUserFriends() {
       await axios
-        .get("http://0.0.0.0:8000/api/follow/", config)
+        .get(
+          "http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/follow/",
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           store.dispatch("setUserFriends", data.friends);
@@ -144,7 +153,10 @@ export default {
 
     async function searchForUser() {
       await axios
-        .get(`http://0.0.0.0:8000/api/accounts/${state.search}/`, config)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/accounts/${state.search}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => {
           state.searchFailed = false;

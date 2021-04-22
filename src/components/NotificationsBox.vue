@@ -72,7 +72,10 @@ export default {
       };
 
       const content = await axios
-        .get(`http://0.0.0.0:8000/api/contents/get_one/${content_id}/`, config)
+        .get(
+          `http://ec2-18-221-25-255.us-east-2.compute.amazonaws.com/api/contents/get_one/${content_id}/`,
+          config
+        )
         .then((response) => response.data)
         .then((data) => data);
 
