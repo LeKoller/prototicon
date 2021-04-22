@@ -20,7 +20,9 @@
         />
         <div class="text_content">
           <p>{{ props.content.text }}</p>
-          <CommentsBox :content="content" />
+          <div>
+            <CommentsBox :content="content" />
+          </div>
         </div>
       </div>
       <div class="like_or_edit_delete_butttons">
@@ -265,6 +267,9 @@ export default {
       color: #d3dce6;
       padding: 10px 30px 10px 30px;
       text-align: start;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
       p {
         margin: 16px 30px;

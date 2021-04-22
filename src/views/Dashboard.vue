@@ -154,8 +154,7 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  max-width: 100%;
-  min-height: 100vh;
+  width: 100%;
   z-index: 0;
 }
 

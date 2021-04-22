@@ -165,6 +165,10 @@ h2 {
     flex-direction: column;
     justify-content: center;
     margin-top: 60px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    bottom: 6vh;
 
     h2 {
       font-size: 2.4rem;
