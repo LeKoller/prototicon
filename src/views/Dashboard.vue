@@ -164,7 +164,7 @@ export default {
 
 .container {
   display: grid;
-  grid-gap: 10px;
+  grid-gap: 16px;
   grid-template-columns: 1fr 4fr;
   grid-template-rows: minmax(min-content, 45px) 1fr 18px; /* this is just magic *-* */
   grid-template-areas: "aside creation" "aside timeline";
