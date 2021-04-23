@@ -65,6 +65,11 @@ export default createStore({
     selectedChat: {},
     currentChatFriend: "",
     sendBox: false,
+    scrollDown: () => {
+      let element = document.getElementById("scrollable");
+      element.scrollIntoView({ behavior: "smooth" });
+      element.scrollTop = element.scrollHeight;
+    },
   },
 
   mutations: {
@@ -376,6 +381,10 @@ export default createStore({
     SET_SEND_BOX(state, boolean) {
       state.sendBox = boolean;
     },
+
+    SET_SCROLL_DOWN(state) {
+      state.scrollDown();
+    },
   },
 
   actions: {
@@ -529,6 +538,10 @@ export default createStore({
 
     setSendBox({ commit }, boolean) {
       commit("SET_SEND_BOX", boolean);
+    },
+
+    setScrollDown({ commit }) {
+      commit("SET_SCROLL_DOWN");
     },
   },
 

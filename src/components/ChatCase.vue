@@ -1,6 +1,7 @@
 <template>
   <div class="chat_case">
-    <div v-if="chat" class="scrollable">
+    <div v-if="chat" class="scrollable" id="scrollable">
+      <button v-if="isChatSelected" class="loadMoreButton">load more</button>
       <div
         class="message_case"
         v-for="message in chat"
@@ -18,8 +19,9 @@
         rows="1"
         v-model="state.message"
         @click="check"
+        @keydown.enter="sendMessage"
       ></textarea>
-      <button class="send_button" @submit.prevent="sendMessage">
+      <button class="send_button" @click="sendMessage">
         <span class="material-icons" id="send_icon">
           send
         </span>
@@ -79,26 +81,22 @@ export default {
         );
 
         state.message = "";
+        scrollDown();
       }
     }
-
-    // onMounted(() => {
-    //   if (friendUsername.value === "") {
-    //     console.log("oi");
-    //     const textarea = document.getElementById("send_box");
-    //     textarea.disabled = true;
-    //   }
-    // });
 
     function check() {
       if (!isChatSelected.value) {
         const sendBox = document.getElementById("send_box");
-        console.log(sendBox);
         sendBox.disabled = true;
       }
 
       const sendBox = document.getElementById("send_box");
       sendBox.disabled = false;
+    }
+
+    function scrollDown() {
+      store.dispatch("setScrollDown");
     }
 
     return {
@@ -109,6 +107,7 @@ export default {
       sendMessage,
       isChatSelected,
       check,
+      scrollDown,
     };
   },
 };
@@ -117,7 +116,8 @@ export default {
 <style lang="scss" scoped>
 .scrollable {
   overflow: auto;
-  padding: 20px;
+  padding: 20px 20px 0 20px;
+  scroll-behavior: smooth;
 
   ::-webkit-scrollbar {
     width: 16px;
@@ -134,12 +134,34 @@ export default {
   ::-webkit-scrollbar-thumb:hover {
     background: #093156;
   }
+
+  .loadMoreButton {
+    position: relative;
+    margin-left: 16px;
+    outline: none;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: slategray;
+
+    &:hover {
+      color: #73e3e7;
+      transform: scale(1.1, 1.1);
+      text-shadow: 0 0 16px #73e3e7;
+    }
+
+    &:active {
+      transform: scale(0.8, 0.8);
+    }
+  }
 }
 
 .send_box_case {
   display: flex;
   justify-content: space-between;
-  padding: 0 20px 20px 20px;
+  padding: 20px;
 
   .send_box {
     width: 100%;
@@ -176,18 +198,14 @@ export default {
   display: flex;
   background-color: rgb(28, 32, 37);
   border-radius: 8px;
-  padding: 8px;
+  padding: 10px;
   padding-right: 30px;
   margin-bottom: 4px;
   flex-wrap: wrap;
   width: fit-content;
-
-  /* .comment_author {
-        margin: 0;
-        margin-right: 8px;
-        margin-top: 2px;
-        height: fit-content;
-      } */
+  max-width: 36vw;
+  text-align: start;
+  margin-top: 8px;
 
   .message_text {
     margin: 0;
@@ -219,5 +237,8 @@ export default {
   justify-content: flex-end;
   margin-left: auto;
   background-color: #7842e8;
+  text-align: end;
+  padding-right: 10px;
+  padding-left: 20px;
 }
 </style>

@@ -13,15 +13,17 @@
         <h3 class="title">{{ props.content.title }}</h3>
       </div>
       <div class="main_content">
-        <img
-          v-if="props.content.image !== null"
-          class="content_image"
-          :src="`${props.content.image}`"
-        />
-        <div class="text_content">
-          <p>{{ props.content.text }}</p>
-          <div>
-            <CommentsBox :content="content" />
+        <div class="inbetween">
+          <img
+            v-if="props.content.image !== null"
+            class="content_image"
+            :src="`${props.content.image}`"
+          />
+          <div class="text_content">
+            <p>{{ props.content.text }}</p>
+            <div>
+              <CommentsBox :content="content" />
+            </div>
           </div>
         </div>
       </div>
@@ -126,7 +128,10 @@ export default {
           {},
           config
         )
-        .then((response) => response.data)
+        .then((response) => {
+          console.log(response.status);
+          return response.data;
+        })
         .then((data) => data);
 
       updateUserLikes();
@@ -256,13 +261,23 @@ export default {
     }
 
     .content_image {
-      max-width: 50vw;
-      max-height: 60vh;
+      max-width: 40vw;
+      height: fit-content;
+      align-self: center;
+    }
+
+    .inbetween {
+      display: flex;
+      padding: 0;
+      margin: 0;
+      background: rgb(25, 29, 32);
+      justify-content: center;
+      width: 100%;
     }
 
     .text_content {
       overflow: auto;
-      max-height: 60vh;
+      width: 100%;
       background-color: rgb(47, 54, 61);
       color: #d3dce6;
       padding: 10px 30px 10px 30px;

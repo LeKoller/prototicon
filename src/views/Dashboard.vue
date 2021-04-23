@@ -81,7 +81,6 @@ export default {
             contents = [...contents, ...data.results];
           });
 
-        store.dispatch("unsetTimeline");
         store.dispatch("setTimeline", contents);
       }
     }
@@ -89,10 +88,14 @@ export default {
     function getMessagesOnCache() {
       try {
         for (let friend of store.state.user.friends) {
-          axios.get(
-            `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/messages/?username=${friend.username}`,
-            config
-          );
+          axios
+            .get(
+              `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/messages/?username=${friend.username}`,
+              config
+            )
+            .then((res) => {
+              console.log(res.data);
+            });
         }
       } catch {
         console.log("ok");
@@ -117,7 +120,6 @@ export default {
           store.dispatch("setChats", data.messages);
         }
         if (data.message) {
-          console.log(data.message);
           store.dispatch("setNewMessage", data.message);
         }
       };
@@ -154,7 +156,9 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100%;
   z-index: 0;
 }
 

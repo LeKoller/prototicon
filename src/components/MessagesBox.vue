@@ -3,6 +3,7 @@
     <div class="chat_selection_case">
       <img
         class="user_avatar_miniature"
+        :class="{ selected: isSelected(friend.username) }"
         v-for="friend in friends"
         :key="friend.id"
         :src="
@@ -38,6 +39,18 @@ export default {
       store.dispatch("setSelectedChat", chats.value[friendUsername]);
       store.dispatch("setCurrentChatFriend", friendUsername);
       store.dispatch("setSendBox", true);
+
+      setTimeout(() => {
+        store.dispatch("setScrollDown");
+      }, 100);
+    }
+
+    function isSelected(username) {
+      if (store.state.currentChatFriend === username) {
+        return true;
+      }
+
+      return false;
     }
 
     onBeforeMount(() => {
@@ -51,6 +64,7 @@ export default {
       friends,
       openFriendsChat,
       ChatCase,
+      isSelected,
     };
   },
 };
@@ -74,6 +88,12 @@ export default {
       cursor: pointer;
       margin-right: 8px;
       border-radius: 4px;
+      transition: all 0.25s ease;
+    }
+
+    .selected {
+      transform: scale(1.2, 1.2);
+      box-shadow: 5px 5px 5px rgba($color: #000000, $alpha: 0.5);
     }
   }
 
