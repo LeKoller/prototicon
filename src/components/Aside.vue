@@ -109,7 +109,7 @@ export default {
 
         await axios
           .post(
-            "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/wallpaper/",
+            "http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/wallpaper/",
             fd,
             imageConfig
           )
@@ -131,7 +131,7 @@ export default {
     function loadUserWallpaper() {
       axios
         .get(
-          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
+          `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
         )
         .then((response) => response.data)
         .then((data) => {
@@ -142,7 +142,7 @@ export default {
     async function loadUserFriends() {
       await axios
         .get(
-          "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/follow/",
+          "http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/follow/",
           config
         )
         .then((response) => response.data)
@@ -154,7 +154,7 @@ export default {
     async function searchForUser() {
       await axios
         .get(
-          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${state.search}/`,
+          `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/${state.search}/`,
           config
         )
         .then((response) => response.data)

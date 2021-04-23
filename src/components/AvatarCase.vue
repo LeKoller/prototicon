@@ -58,7 +58,7 @@ export default {
 
         await axios
           .post(
-            "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/avatar/",
+            "http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/avatar/",
             fd,
             imageConfig
           )
@@ -76,7 +76,7 @@ export default {
     function loadUserAvatar() {
       axios
         .get(
-          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
+          `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/${store.state.user.username}/`
         )
         .then((response) => response.data)
         .then((data) => {

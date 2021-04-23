@@ -5,7 +5,7 @@
       v-for="user in store.state.user.followers"
       :key="user.id"
       :src="
-        `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com${user.image}/`
+        `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com${user.image}/`
       "
       :alt="`${user.username}`"
       @click="goToUsersProfile(user.username)"
@@ -33,7 +33,7 @@ export default {
     async function goToUsersProfile(username) {
       const other = await axios
         .get(
-          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/accounts/${username}/`,
+          `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/accounts/${username}/`,
           config
         )
         .then((response) => response.data)

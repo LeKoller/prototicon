@@ -72,7 +72,7 @@ export default {
     async function sendMessage() {
       if (state.message) {
         await axios.post(
-          "http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com/api/messages/",
+          "http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com/api/messages/",
           {
             target_username: friendUsername.value,
             text: state.message,

@@ -7,7 +7,7 @@
         v-for="friend in friends"
         :key="friend.id"
         :src="
-          `http://ec2-15-228-101-219.sa-east-1.compute.amazonaws.com${friend.image}/`
+          `http://ec2-177-71-148-166.sa-east-1.compute.amazonaws.com${friend.image}/`
         "
         :alt="`${friend.username}`"
         @click="openFriendsChat(friend.username)"
